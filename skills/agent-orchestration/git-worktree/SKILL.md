@@ -1,5 +1,5 @@
 ---
-name: worktree
+name: git-worktree
 description: Use git worktrees to run multiple coding agents in parallel on one repo without collisions. Use when starting a task in a shared repo, when the user says "worktree", "parallel agents", "one worktree per task", or when agents keep overwriting each other's changes. Covers creating worktrees, making them as complete as the main checkout (.env files, dependencies, databases, ports), merging back, and cleanup.
 disable-model-invocation: true
 ---

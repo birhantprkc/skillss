@@ -1,11 +1,11 @@
 ---
 name: prod-push
-description: 'Push to GitHub main and babysit the change until it is verifiably live in production, fixing CI and deploy failures along the way. Use when David says "push", "push to github", "push to prod", "ship it", or "deploy". Differentiator: pushing requires David''s explicit go-ahead; this is the procedure for AFTER he gives it (this repo''s CI gate + Vercel promotion).'
+description: 'Push to GitHub main and babysit the change until it is verifiably live in production, fixing CI and deploy failures along the way. Use when the user says "push", "push to github", "push to prod", "ship it", or "deploy". Differentiator: pushing requires the user''s explicit go-ahead; this is the procedure for AFTER he gives it (this repo''s CI gate + Vercel promotion).'
 ---
 
 # Prod Push
 
-Only run this after David explicitly told you to push. Never push on your own.
+Only run this after the user explicitly told you to push. Never push on your own.
 
 ## How shipping works here
 
@@ -19,7 +19,7 @@ Only run this after David explicitly told you to push. Never push on your own.
 Agents build in linked worktrees (`cursor/*`, `agent/*` branches); the loop below refuses to run there. To ship worktree work:
 
 1. In the worktree: commit everything on your own branch. Never commit to `main` from a worktree.
-2. In the primary checkout (`~/code/DeepAPI`): the tree must be clean (`git status --porcelain --untracked-files=no` prints nothing). If it is dirty with WIP that is not yours, stop and tell David — never stash around it.
+2. In the primary checkout (`~/code/DeepAPI`): the tree must be clean (`git status --porcelain --untracked-files=no` prints nothing). If it is dirty with WIP that is not yours, stop and tell the user — never stash around it.
 3. `git pull --rebase origin main`, then land YOUR branch: `git merge <branch>` (fast-forwards when possible), or cherry-pick its commits if the branch history is messy. One branch at a time — never land two agent branches in one pass.
 4. Resolve any conflicts here in the hub, rerun the relevant checks, then continue the loop below at step 2.
 5. After the push is verified live: `git worktree remove <worktree-path>` and `git branch -d <branch>`.
@@ -60,7 +60,7 @@ git add <your files> && git commit
 # The pull requires a CLEAN tree. --autostash is BANNED here: replaying
 # dirty edits onto fresh upstream commits creates UU conflicts and orphaned
 # autostash entries (this bit us on 2026-07-25). If tracked dirt remains
-# that is not yours, stop and tell David — never stash around it.
+# that is not yours, stop and tell the user — never stash around it.
 [ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "prod-push: tree not clean; commit yours or stop" >&2; exit 1; }
 # The pre-push hook typechecks the EXACT pushed commit in a clean worktree.
 # Incident recovery pushes still run the full suite. Never use `--no-verify`.
@@ -96,7 +96,7 @@ gh api "repos/<owner>/<repo>/deployments/$DEP/statuses" --jq '.[0].state'
 curl -sS -m 15 https://deepapi.co/v1/health
 ```
 
-Done = green CI plus a successful Production deployment and a healthy `GET /v1/health` for the exact SHA. Then report to David what shipped.
+Done = green CI plus a successful Production deployment and a healthy `GET /v1/health` for the exact SHA. Then report to the user what shipped.
 
 ## Active incident lane
 
@@ -108,7 +108,7 @@ DEEPAPI_INCIDENT_RECOVERY=1 DEEPAPI_INCIDENT_OWNER=<owner> git push origin main
 SHA=$(git rev-parse HEAD)
 ```
 
-Track that exact SHA through CI, Production deployment, and health using the normal loop. Do not push a second recovery attempt until the first SHA has a terminal result. David alone decides when recovery is proven and the freeze may be cleared; use the runbook's clearance command and commit only `.github/incident-freeze.json`.
+Track that exact SHA through CI, Production deployment, and health using the normal loop. Do not push a second recovery attempt until the first SHA has a terminal result. The user alone decides when recovery is proven and the freeze may be cleared; use the runbook's clearance command and commit only `.github/incident-freeze.json`.
 
 ## Failure modes
 
@@ -120,15 +120,15 @@ gh run view <databaseId> --log-failed
 
 Reproduce locally (`npm run verify`, or just the failing step, e.g. `npm run typecheck`), fix it, commit, and restart the loop. The pre-push log is authoritative for the exact commit; a manual run checks the shared working tree and may include other agents' WIP. The new push gets a new `$SHA` — track that one.
 
-- **CI green but Vercel status `failure`** — the Vercel build itself broke. Reproduce with `npm run build`. If it is Vercel-side (env vars, platform limits), stop and give David the `vercel_logs` link — agents have no Vercel CLI or dashboard access, on purpose.
+- **CI green but Vercel status `failure`** — the Vercel build itself broke. Reproduce with `npm run build`. If it is Vercel-side (env vars, platform limits), stop and give the user the `vercel_logs` link — agents have no Vercel CLI or dashboard access, on purpose.
 - **CI `conclusion: cancelled`** — a newer push superseded yours; your commit will never deploy on its own. Confirm the newer sha contains your change (`git merge-base --is-ancestor $SHA <newer-sha>`) and track that sha instead.
-- **CI `conclusion: cancelled` during an incident** — stop. A forbidden newer push entered `main`; tell David and identify its SHA before taking another recovery action.
-- **Health returns `{"ok":false}` (HTTP 503)** — migration drift: deployed code expects a migration not yet applied to the prod DB. The deploy itself still succeeded. Agents can never write to prod — tell David which migration to apply and stop looping.
+- **CI `conclusion: cancelled` during an incident** — stop. A forbidden newer push entered `main`; tell the user and identify its SHA before taking another recovery action.
+- **Health returns `{"ok":false}` (HTTP 503)** — migration drift: deployed code expects a migration not yet applied to the prod DB. The deploy itself still succeeded. Agents can never write to prod — tell the user which migration to apply and stop looping.
 - **Push rejected (non-fast-forward)** — someone pushed meanwhile. `git pull --rebase origin main` and push again.
 
 ## Hard rules
 
-- NEVER push without David's explicit go-ahead. Never force-push. Never push side branches.
+- NEVER push without the user's explicit go-ahead. Never force-push. Never push side branches.
 - Never bypass or weaken CI to get green: no deleting/skipping tests, no `--no-verify`, no merging around a red check.
-- `npm run smoke:prod` is David-only (spends real money). Your free prod check is `GET /v1/health`.
-- If the change includes a DB migration, David applies it to prod manually — expect health to stay red until he does, and say so in your report.
+- `npm run smoke:prod` is user-only (spends real money). Your free prod check is `GET /v1/health`.
+- If the change includes a DB migration, the user applies it to prod manually — expect health to stay red until he does, and say so in your report.

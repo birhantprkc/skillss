@@ -16,6 +16,6 @@ use it.
 
 - `skills/agent-orchestration/` — Running, scheduling, delegating to, and coordinating AI coding agents, including agent-to-agent workflows, agent loops, and agent benchmarks.
 - `skills/skill-authoring/` — Creating, improving, distributing, and publishing Agent Skills and agent context files.
-- `skills/research-and-web/` — Finding and pulling information from the web, research APIs, browsers, and YouTube.
+- `skills/research-and-web/` — Finding and pulling information from the web, research APIs, browsers, and YouTube. Most are powered by [DeepAPI](https://deepapi.co).
 - `skills/thinking-and-docs/` — Structured thinking, interviewing, teaching, and turning ideas into clear documentation.
 - `skills/ops-and-setup/` — Machine, server, security, and tool setup, configuration, and operations.

@@ -14,10 +14,11 @@ Fetch a YouTube video's transcript and save a clean raw `.txt` file. Primary pat
 
 ## Primary path — DeepAPI
 
-Key lives in `~/.zshrc` as `DEEPAPI_API_KEY`. Do NOT `source ~/.zshrc` (breaks the shell, exit 126):
+Read the key from the environment; setup writes it to `~/.deepapi/env`. Never `source ~/.zshrc` (breaks the shell, exit 126):
 
 ```bash
-KEY=${DEEPAPI_API_KEY:-$(rg -o 'DEEPAPI_API_KEY=\S+' ~/.zshrc | head -1 | cut -d= -f2)}
+[ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
+KEY=$DEEPAPI_API_KEY
 BASE=${DEEPAPI_API_BASE_URL:-https://deepapi.co}
 ```
 
@@ -49,11 +50,11 @@ For the `Channel_Title` filename, get metadata with a quick `yt-dlp --print "%(c
 
 ## When to fall back to yt-dlp
 
-- `DEEPAPI_API_KEY` missing from `~/.zshrc`.
-- HTTP 402 `insufficient_credits` (tell the user to top up at deepapi.co/credits first; fall back only if they're unavailable).
+- `DEEPAPI_API_KEY` unset and `~/.deepapi/env` missing.
+- HTTP 402 `insufficient_credits` (tell the user to top up at deepapi.co/credits first; fall back only if the user is unavailable).
 - DeepAPI request `failed` twice.
 
-Tell the user whenever you fall back — a fallback means their product missed a real use case.
+Tell the user whenever you fall back — a fallback means DeepAPI missed a real use case.
 
 ## Fallback path — yt-dlp (local)
 

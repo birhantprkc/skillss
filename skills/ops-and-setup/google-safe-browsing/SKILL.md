@@ -46,4 +46,4 @@ Human-readable version: `https://transparencyreport.google.com/safe-browsing/sea
 
 ## Worked example
 
-`brand-alpha.example.com`: internal team tool, domain contained a third-party brand name, anonymous visitors were redirected straight to a branded email+password form, plus a public waitlist form. Flagged as deceptive site; blocked in Brave/Chrome. Fix: deleted waitlist page, added neutral `/welcome` landing (ownership + non-affiliation notice), de-branded all logged-out pages, then Search Console review. Code was never the problem.
+An internal team tool used a domain containing a well-known brand name; anonymous visitors were redirected straight to a brand-styled email+password form, plus a public waitlist form. Flagged as deceptive site; blocked in Brave/Chrome. Fix: deleted waitlist page, added neutral `/welcome` landing (ownership + non-affiliation notice), de-branded all logged-out pages, then Search Console review. Code was never the problem.

@@ -59,6 +59,12 @@ Hermes-unique: **zero-token mode** (run a script, deliver stdout verbatim — us
 
 One fast recurring tick gates many slower per-task checks: the tick reads a task list + per-task `last_run` timestamps and only acts on tasks that are due. In Hermes use a recurring job (zero-token mode when nothing's due); in Camp A use a while-sleep loop. Define active-hours, and stay silent when nothing is due — no empty noise.
 
+A watchdog tick is just a command whose stdout is delivered verbatim — keep it to one cheap, unauthenticated call:
+
+```bash
+curl -s --max-time 10 https://deepapi.co/v1/health   # alert only on non-ok
+```
+
 ## Verify it fires (before reporting success)
 
 1. Camp A: log file grows after one interval, or run the wrapped command once by hand → clean JSON, exit 0.

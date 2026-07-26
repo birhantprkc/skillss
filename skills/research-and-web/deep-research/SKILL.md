@@ -10,11 +10,12 @@ We use DeepAPI (deepapi.co) for all deep research. This fully replaced the retir
 
 ## API key
 
-- Key lives in `~/.zshrc` as `DEEPAPI_API_KEY`.
-- **Gotcha:** do NOT `source ~/.zshrc` — it breaks the shell (exit 126). Use the env var if set, else read just the key line:
+- Read `DEEPAPI_API_KEY` from the environment; setup writes it to `~/.deepapi/env`.
+- **Gotcha:** do NOT `source ~/.zshrc` — it breaks the shell (exit 126). Use the env var if set, else load the platform file:
 
 ```bash
-KEY=${DEEPAPI_API_KEY:-$(rg -o 'DEEPAPI_API_KEY=\S+' ~/.zshrc | head -1 | cut -d= -f2)}
+[ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
+KEY=$DEEPAPI_API_KEY
 BASE=${DEEPAPI_API_BASE_URL:-https://deepapi.co}
 ```
 
@@ -37,7 +38,7 @@ One call = one cited answer (~700 words max, finishes or fails within ~60s serve
 
 ```bash
 IDK=$(uuidgen)   # keep this; retries must reuse the SAME Idempotency-Key
-jq -n --rawfile p /tmp/dr_prompt.txt '{query:$p, maxCostUsd:"0.10"}' > /tmp/dr_body.json
+jq -n --rawfile p /tmp/dr_prompt.txt '{query:$p, maxCostUsd:"0.20"}' > /tmp/dr_body.json
 curl -s --max-time 120 "$BASE/v1/research/deep" \
   -H "Authorization: Bearer $KEY" \
   -H "Content-Type: application/json" \
@@ -45,7 +46,7 @@ curl -s --max-time 120 "$BASE/v1/research/deep" \
   -d @/tmp/dr_body.json > /tmp/dr_result.json
 ```
 
-Default spend cap is `maxCostUsd: "0.10"` per call; raise it only if the user approves.
+Default spend cap is `maxCostUsd: "0.20"` per call — this is the API's minimum (lower values are rejected with `invalid_request`, confirmed 2026-07-21); raise it only if the user approves.
 
 ## Step 3 — Read the report + sources
 

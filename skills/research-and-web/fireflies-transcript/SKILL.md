@@ -1,6 +1,6 @@
 ---
 name: fireflies-transcript
-description: 'Pull raw meeting transcripts from David''s Fireflies.ai notetaker via its GraphQL API, using the key saved globally on this MacBook. Use when the user wants a call transcript, meeting notes, "what was said on the call", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.'
+description: 'Pull raw meeting transcripts from the user''s Fireflies.ai notetaker via its GraphQL API, using the key saved globally on this machine. Use when the user wants a call transcript, meeting notes, "what was said on the call", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.'
 ---
 
 # Fireflies Transcript
@@ -32,7 +32,7 @@ curl -sS -X POST https://api.fireflies.ai/graphql \
 - `date` is epoch **milliseconds**. Convert on macOS: `date -r $((1784127600000/1000))`.
 - The `transcripts(title:)` filter is EXACT-match — it returns `[]` for partial names.
   List recent meetings and grep locally instead.
-- Ad-hoc meetings have no proper title (e.g. `david@... - Wed, 15 Jul 2026 17:00:55 CEST - Untitled`).
+- Ad-hoc meetings have no proper title (e.g. `user@... - Wed, 15 Jul 2026 17:00:55 CEST - Untitled`).
   Identify those by date/time, then confirm via content or speakers, not the title.
 - Paginate older meetings with `skip:` (e.g. `transcripts(limit: 50, skip: 25)`).
 

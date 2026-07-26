@@ -11,15 +11,15 @@ Source of truth: `~/infrastructure.md` (read it for the latest — IPs/expiratio
 
 | Hostname | IP | OS | Purpose | Expires |
 |---|---|---|---|---|
-| <hostname> | <IP> | Ubuntu 24.04 (Dokploy) | OpenClaw — personal instance | <expiry> |
-| <hostname> | <IP> | Ubuntu 24.04 (n8n) | All n8n workflow automations (primary) | <expiry> |
-| <hostname> | <IP> | Ubuntu 24.04 | Hermes Agent — Discord gateway (Vilnius, LT) | <expiry> |
+| personal.openclaw | <IP> | Ubuntu 24.04 (Dokploy) | OpenClaw — personal instance | <redacted> |
+| n8n.automations | <IP> | Ubuntu 24.04 (n8n) | All n8n workflow automations (primary) | <redacted> |
+| private.hermes | <IP> | Ubuntu 24.04 | Hermes Agent — Discord gateway | <redacted> |
 
 SSH as `root@<IP>`.
 
 ## Access levels (never share higher than needed)
 
-1. **App login** — e.g. `<n8n-login-hostname>`. Build/edit workflows, no server access. Safest to share.
+1. **App login** — e.g. `<app-login-url>`. Build/edit workflows, no server access. Safest to share.
 2. **VPS SSH** — `root@<IP>`. Docker, files, system config. Trusted technical people only.
 3. **Hostinger hPanel** — `hpanel.hostinger.com`. Billing, reboot, OS reinstall. Exposes SSH creds + browser terminal, so it grants server access too. The user only.
 
@@ -33,11 +33,11 @@ Claude Code cmux note: after Claude finishes, it may prefill a predicted next us
 
 ## Agents on servers
 
-- **OpenClaw** → the OpenClaw server (managed via Dokploy).
-- **Hermes** → the Hermes server (Discord gateway). Setup/config docs in `library/hermes/`.
-- **n8n** → the n8n automations server.
+- **OpenClaw** → personal.openclaw (managed via Dokploy).
+- **Hermes** → private.hermes (Discord gateway). Setup/config docs in `library/hermes/`.
+- **n8n** → n8n.automations.
 
-## Hermes ops (on the Hermes server)
+## Hermes ops (on private.hermes)
 
 ```bash
 hermes --version            # shows version + commits behind

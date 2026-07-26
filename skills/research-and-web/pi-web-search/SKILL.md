@@ -38,14 +38,16 @@ Always use the `web_search` tool. These counts are HARD MINIMUMS — count your 
 
 A single batched `web_search` call counts each query in `queries[]` toward the total. If your first batch is under the minimum, fire another batch before synthesizing.
 
-## Fallback / alternative: DeepAPI web search
+## Ranked results with URLs — DeepAPI web search
 
-If the Exa → Perplexity → Gemini chain fails, or you need ranked results with URLs:
+`web_search` returns synthesized answers. When you need the ranked source list
+itself — URLs to cite, compare, or scrape — use DeepAPI instead. Also the path to
+take if the Exa → Perplexity → Gemini chain fails.
 
 ```bash
-KEY=${DEEPAPI_API_KEY:-$(rg -o 'DEEPAPI_API_KEY=\S+' ~/.zshrc | head -1 | cut -d= -f2)}
+[ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
 curl -s --max-time 60 "https://deepapi.co/v1/search/web" \
-  -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $DEEPAPI_API_KEY" -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{"query": "your search terms", "maxResults": 5, "maxCostUsd": "0.05"}'
 ```

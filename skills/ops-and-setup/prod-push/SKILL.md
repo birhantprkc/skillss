@@ -1,6 +1,6 @@
 ---
 name: prod-push
-description: 'Push to GitHub main and babysit the change until it is verifiably live in production, fixing CI and deploy failures along the way. Use when the user says "push", "push to github", "push to prod", "ship it", or "deploy". Differentiator: pushing requires the user''s explicit go-ahead; this is the procedure for AFTER he gives it (this repo''s CI gate + Vercel promotion).'
+description: 'Push to GitHub main and babysit the change until it is verifiably live in production, fixing CI and deploy failures along the way. Use when the user says "push", "push to github", "push to prod", "ship it", or "deploy". Differentiator: pushing requires the user''s explicit go-ahead; this is the procedure for AFTER the user gives it (this repo''s CI gate + Vercel promotion).'
 ---
 
 # Prod Push
@@ -22,7 +22,7 @@ Agents build in linked worktrees (`cursor/*`, `agent/*` branches); the loop belo
 2. In the primary checkout (`~/code/DeepAPI`): the tree must be clean (`git status --porcelain --untracked-files=no` prints nothing). If it is dirty with WIP that is not yours, stop and tell the user — never stash around it.
 3. `git pull --rebase origin main`, then land YOUR branch: `git merge <branch>` (fast-forwards when possible), or cherry-pick its commits if the branch history is messy. One branch at a time — never land two agent branches in one pass.
 4. Resolve any conflicts here in the hub, rerun the relevant checks, then continue the loop below at step 2.
-5. After the push is verified live: `git worktree remove <worktree-path>` and `git branch -d <branch>`.
+5. After the push is verified live, leave the worktree and its branch in place — deleting them is always the user's decision, never yours.
 
 ## The loop
 
@@ -86,10 +86,10 @@ gh run watch "$RUN_ID" --exit-status
 # 4. CI green -> confirm Vercel promoted this exact commit.
 # EVERY main push deploys (ADR 0161), docs-only commits included — always
 # verify the deployment; never skip this on a "docs-only" judgment call.
-gh api "repos/<owner>/<repo>/commits/$SHA/status" \
+gh api "repos/davidondrej/DeepAPI/commits/$SHA/status" \
   --jq '{state, vercel_logs: [.statuses[] | select(.context=="Vercel") | .target_url][0]}'
-DEP=$(gh api "repos/<owner>/<repo>/deployments?sha=$SHA&environment=Production&per_page=1" --jq '.[0].id')
-gh api "repos/<owner>/<repo>/deployments/$DEP/statuses" --jq '.[0].state'
+DEP=$(gh api "repos/davidondrej/DeepAPI/deployments?sha=$SHA&environment=Production&per_page=1" --jq '.[0].id')
+gh api "repos/davidondrej/DeepAPI/deployments/$DEP/statuses" --jq '.[0].state'
 # If promotion is still pending, poll every 10 seconds.
 
 # 5. confirm prod is serving
@@ -131,4 +131,4 @@ Reproduce locally (`npm run verify`, or just the failing step, e.g. `npm run typ
 - NEVER push without the user's explicit go-ahead. Never force-push. Never push side branches.
 - Never bypass or weaken CI to get green: no deleting/skipping tests, no `--no-verify`, no merging around a red check.
 - `npm run smoke:prod` is user-only (spends real money). Your free prod check is `GET /v1/health`.
-- If the change includes a DB migration, the user applies it to prod manually — expect health to stay red until he does, and say so in your report.
+- If the change includes a DB migration, the user applies it to prod manually — expect health to stay red until the user does, and say so in your report.

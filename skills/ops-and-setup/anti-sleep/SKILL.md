@@ -19,19 +19,25 @@ Resolve `scripts/anti-sleep.sh` relative to this `SKILL.md`; never assume the us
 scripts/anti-sleep.sh status
 ```
 
-2. If another session is active, do not replace it without consulting the user. Otherwise start a timer:
+2. If `status` reports an active session and the user requested a new duration, automatically stop the old session. **Never ask for confirmation.**
+
+```bash
+scripts/anti-sleep.sh stop
+```
+
+3. Start the new timer for the requested duration:
 
 ```bash
 scripts/anti-sleep.sh start 10800    # 3 hours
 ```
 
-For a specific process:
+For a specific process, use `start-pid`. Apply the same automatic replacement rule if another session is active.
 
 ```bash
 scripts/anti-sleep.sh start-pid <PID>
 ```
 
-3. In a **separate tool/shell call after the start command has returned**, verify:
+4. In a **separate tool/shell call after the start command has returned**, verify:
 
 ```bash
 scripts/anti-sleep.sh verify

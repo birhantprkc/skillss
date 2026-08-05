@@ -1,6 +1,6 @@
 ---
 name: corral-launch-agents
-description: Launch one or many CLI coding agents through Corral Design 1 in fresh, isolated Git worktrees. Use when the user asks to launch, spawn, batch-start, or programmatically create Corral agents, especially a Pi Agent in a specific repository or exact worktree path. Unlike the Herdr skill, this creates new Corral-owned tasks and reconstructs the plugin environment for calls made outside Herdr.
+description: Launch new CLI coding agents through Corral Design 1, or correctly reopen existing agent sessions inside a Corral-active Herdr repository. Use when the user asks to launch, spawn, batch-start, reopen, relaunch, or resume agents. New launches create Corral-owned tasks; resumptions reuse existing worktrees and sessions.
 ---
 
 # Corral Launch Agents
@@ -18,40 +18,46 @@ Distinguish these targets before acting:
 
 Treat launching as a state-changing action. Execute it only when the user asks to launch; inspection, explanation, or dry-run requests do not authorize a launch.
 
-## Resume existing Cursor CLI sessions
+## Reopen existing Cursor CLI sessions
 
-Corral's launch helper is the wrong tool for this workflow. Load the `herdr` and `cursor-cli` skills, then:
+Corral's launch helper is the wrong tool for resumptions. Load the `herdr` and `cursor-cli` skills, then:
 
-1. Identify the named Herdr session, repository workspace, original worktree path, and exact Cursor chat ID.
-2. Select only non-empty chats. Use `meta.json`'s `updatedAtMs` or transcript update time—not the chat directory's modification time. Distinguish the human-facing parent chat from review subagents. If the user named a specific chat, use that exact ID.
-3. Inspect live panes first. Never resume the same chat ID concurrently in two panes; reuse the existing pane instead.
-4. Create a tab under the existing repository workspace while keeping the original worktree as that tab's cwd:
+1. Identify the named Herdr session, primary repository checkout, original linked worktree, and exact Cursor chat ID.
+2. Select only non-empty chats. Use `meta.json`'s `updatedAtMs` or transcript update time—not directory modification time. Distinguish the parent chat from review subagents.
+3. Inspect live panes first. Never resume one chat ID concurrently in two panes; reuse the existing pane.
+   If it is open in an incorrectly created top-level workspace, confirm it is idle with no unsent draft, close only that workspace, and never delete the worktree.
+4. Reopen the existing linked worktree with repository metadata:
 
 ```bash
-herdr --session "$SESSION" tab create \
-  --workspace "$REPO_WORKSPACE_ID" \
-  --cwd "$WORKTREE_PATH" \
-  --label "$LABEL" \
+herdr --session "$SESSION" worktree open \
+  --cwd "$PRIMARY_CHECKOUT" \
+  --path "$WORKTREE_PATH" \
+  --label "$WORKTREE_NAME" \
   --no-focus
 ```
 
-5. Capture the returned root pane ID and resume the exact chat without sending a new prompt:
+This opens the existing path; it does not create a Git worktree or Corral task. It is the required Corral-compatible layout because it groups the worktree beneath its repository while preserving the worktree name. If the result says `already_open: true`, reuse that linked workspace. Do not use `workspace create`; it lacks Git worktree metadata and produces a top-level space. Do not use `tab create` under the primary workspace; it shows the repository name instead of a linked worktree entry.
+
+5. Capture `root_pane.pane_id` from the result and resume the exact chat without sending a prompt:
 
 ```bash
 herdr --session "$SESSION" pane run "$PANE_ID" \
   "cursor-agent --yolo --trust --resume $CHAT_ID"
 ```
 
-6. Verify the agent became idle and the expected history loaded:
+6. Verify the workspace has the expected `checkout_path`, `repo_root`, shared `repo_key`, and `is_linked_worktree: true`. Then verify the history:
 
 ```bash
+herdr --session "$SESSION" workspace list
 herdr --session "$SESSION" agent wait "$PANE_ID" --until idle --timeout 30000
 herdr --session "$SESSION" pane read "$PANE_ID" \
   --source recent-unwrapped \
   --lines 200
 ```
 
-Confirm the terminal title, conversation tail, and `foreground_cwd`. Resuming restores conversation history, not the old process environment; the original worktree preserves its filesystem state.
+Confirm the terminal title, conversation tail, and `foreground_cwd`. Resuming restores conversation history, not the old process environment.
+
+Corral adoption is separate and normally unnecessary. Use it only when the user explicitly asks to turn an external existing worktree into a persisted Corral task. Do not adopt merely to restore Herdr grouping or resume a CLI chat.
 
 ## Use the helper
 

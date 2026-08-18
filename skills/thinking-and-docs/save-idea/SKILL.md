@@ -25,7 +25,7 @@ Note: a technical insight can go in the startup bucket too — some technical in
    - Starts with `topic:` → topic (strip the prefix).
    - Starts with `marketing:` → marketing idea (strip the prefix).
    - Starts with `startup:` → startup idea (strip the prefix).
-   - Convictions have NO prefix (deliberate, David 2026-08-18) — route them by judgment only.
+   - Convictions have NO prefix (deliberate, user 2026-08-18) — route them by judgment only.
    - No prefix → judge: a belief stated as a certainty about AI-era building (startups, AI industry, agentic coding) → conviction; business/product idea → startup idea; a way to get an existing product in front of people → marketing idea; full video concept → video idea; smaller thought or observation → topic. Only if genuinely ambiguous, ask the user one short question.
 3. **Read the target file** and find the last entry number. Next number = last + 1.
    - `TOPICS.md`, `MARKETING-IDEAS.md`, and `CONVICTIONS.md` start at 1. `VIDEO-IDEAS.md` continues from an old Google Doc.
@@ -34,25 +34,25 @@ Note: a technical insight can go in the startup bucket too — some technical in
 4. **Append the entry.**
    - **Video ideas, topics & marketing ideas** — append at the bottom of the file, wording verbatim, context lines tab-indented under the numbered line:
 
-```
+
 NNNN. Idea title exactly as the user said it
-\tsource: ~/code/some-repo, Cursor chat "Chat title", 2026-07-15
-\tany extra links or notes the user gave
-```
+	source: ~/code/some-repo, Cursor chat "Chat title", 2026-07-15
+	any extra links or notes the user gave
+
 
    - **Startup ideas** — insert after the last numbered idea, keeping the trailing `----` separator and discarded-ideas note as the last lines of the file. Format per `~/code/ideas/startup/AGENTS.md`: one tight entry, `N. Title — one-line explanation.` Rewrite for clarity and concision but stay loyal to the user's wording and voice. Blank line between entries. Source line indented with 4 spaces (that file uses spaces, not tabs):
 
-```
+
 69. Idea title — one-line explanation in the user's voice.
     - source: ~/code/some-repo, Cursor chat "Chat title", 2026-08-01
-```
+
 
    - **Convictions** — append at the bottom of `CONVICTIONS.md`, same tight style as startup ideas: `N. Punchy conviction — one-line why.` Tighten for punch but stay loyal to the user's wording and voice. Blank line between entries, source line indented with 4 spaces:
 
-```
+
 1. Punchy conviction — one-line why.
     - source: ~/code/some-repo, Cursor chat "Chat title", 2026-08-18
-```
+
 
 5. **Build the source line.**
    - Repo: the folder the skill was invoked from, as `~/...` path (check `git rev-parse --show-toplevel`; if not a repo, use the cwd).
@@ -60,12 +60,12 @@ NNNN. Idea title exactly as the user said it
    - Date: today, YYYY-MM-DD.
 6. **Commit and push** the repo. Always use `git -C` so the current working directory never matters — never `cd`, never launch another agent for this:
 
-```bash
+bash
 git -C ~/code/ideas pull --rebase --autostash origin main
 git -C ~/code/ideas add VIDEO-IDEAS.md TOPICS.md MARKETING-IDEAS.md STARTUP-IDEAS.md CONVICTIONS.md
 git -C ~/code/ideas commit -m "Add idea 4839 on graph engineering video"
 git -C ~/code/ideas push origin main
-```
+
 
    - Stage ONLY the idea file(s) you touched. Never `git add -A` — unrelated work must not get swept in.
    - Commit message: `Add idea NNNN on <short description>` (or `Add topic NNNN on ...` / `Add marketing idea NN on ...` / `Add startup idea NN on ...` / `Add conviction NN on ...`). Multiple entries → list the numbers.

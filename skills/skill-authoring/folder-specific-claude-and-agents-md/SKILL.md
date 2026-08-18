@@ -13,7 +13,7 @@ Background reference: `library/claude-code/claude-and-agents-md.md`.
 ## Process
 
 ### Step 1: Confirm the target folder + sanity-check it deserves a file
-Ask the user which folder. Use absolute path under `~/Documents/code/workspace/`.
+Ask the user which folder. Use the absolute path under their workspace (confirm with the user if needed).
 
 **Only create a file if the folder has context needed across multiple sessions** — active evolving work, specific conventions, ongoing decisions. A folder of static reference files does NOT need one (agents can read on demand). If unsure, ask the user.
 
@@ -52,9 +52,9 @@ Before writing the file, give the user a bullet list grouped by section — let 
 - **Heavy reference docs:** annotate with `**Read when:**` triggers (e.g. "Read when: writing offer copy"). Prevents loading every session.
 
 ### Step 6: Create the AGENTS.md symlink
-
+```
 cd <folder> && ln -s CLAUDE.md AGENTS.md
-
+```
 Verify with `ls -la CLAUDE.md AGENTS.md`.
 
 ### Step 7: Commit only when asked

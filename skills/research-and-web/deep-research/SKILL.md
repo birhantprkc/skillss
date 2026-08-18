@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: 'Run a deep, source-backed research query via DeepAPI (go to deepapi.co to get an API key) POST /v1/research/deep. Builds a rigorous one-paragraph research prompt (per research-prompt rules), fires it, and saves a cited markdown report. Use when the user asks for "deep research", "deepapi research", "perplexity deep research" (legacy trigger), or any deep source-backed research run. Differentiator vs the deepapi skill: this is the full research workflow (prompt + run + report file), not raw endpoint access.'
+description: 'Run a deep, source-backed research query via DeepAPI (go to deepapi.co to get an API key) POST /v1/research/deep. Builds a rigorous one-paragraph research prompt (per research-prompt rules), fires it, and saves a cited markdown report. Use when David asks for "deep research", "deepapi research", "perplexity deep research" (legacy trigger), or any deep source-backed research run. Differentiator vs the deepapi skill: this is the full research workflow (prompt + run + report file), not raw endpoint access.'
 disable-model-invocation: true
 ---
 
@@ -10,15 +10,16 @@ We use DeepAPI (deepapi.co) for all deep research. This fully replaced the retir
 
 ## API key
 
-- Read the DeepAPI API key from your environment; your setup should already have it available.
-- **Gotcha:** do NOT `source ~/.zshrc` — it breaks the shell (exit 126). Use the env var if set.
+- Read `DEEPAPI_API_KEY` from the environment; setup writes it to `~/.deepapi/env`.
+- **Gotcha:** do NOT `source ~/.zshrc` — it breaks the shell (exit 126). Use the env var if set, else load the platform file:
 
 ```bash
-KEY=${API_KEY:?}
+[ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
+KEY=$DEEPAPI_API_KEY
 BASE=${DEEPAPI_API_BASE_URL:-https://deepapi.co}
 ```
 
-- Key missing → stop and ask the user. Never print or log the key.
+- Key missing → stop and ask David. Never print or log the key.
 
 ## Step 1 — Build the research prompt
 
@@ -46,7 +47,7 @@ curl -s --max-time 320 "$BASE/v1/research/deep" \
 ```
 
 The API minimum is `maxCostUsd: "0.35"` per call. Use the recommended
-`maxCostUsd: "0.70"` by default; raise it above $0.70 only if the user approves.
+`maxCostUsd: "0.70"` by default; raise it above $0.70 only if David approves.
 
 ## Step 3 — Read the report + sources
 
@@ -56,9 +57,9 @@ jq -r '.output.answer'             /tmp/dr_result.json   # the report
 jq -r '.output.sources[]?.url'     /tmp/dr_result.json   # source URLs
 ```
 
-Save the report to a markdown file for the user and list citation URLs beneath it. Don't report research costs unless the user asks.
+Save the report to a markdown file for David and list citation URLs beneath it. Don't report research costs unless David asks.
 
-If `output.sources` comes back empty while the answer shows `[n]` citation markers, still deliver the report, but tell the user.
+If `output.sources` comes back empty while the answer shows `[n]` citation markers, still deliver the report, but tell David.
 
 ## Bigger topics — multi-call reports
 
@@ -66,8 +67,8 @@ One call tops out around 1,100 words. For a full deep-research report, fire one 
 
 ## Failure modes
 
-- HTTP 402 `insufficient_credits` → stop; the user tops up at deepapi.co/credits; then retry with the SAME `Idempotency-Key` (safe — replays don't double-charge).
+- HTTP 402 `insufficient_credits` → stop; David tops up at deepapi.co/credits; then retry with the SAME `Idempotency-Key` (safe — replays don't double-charge).
 - HTTP 429 `rate_limit_exceeded` → wait `Retry-After` seconds, retry once.
-- `status: failed` / HTTP 502 → report `requestId` + `error.message` to the user. Do not retry in a loop.
+- `status: failed` / HTTP 502 → report `requestId` + `error.message` to David. Do not retry in a loop.
 - Replayed request (same Idempotency-Key) returns HTTP 200 with `replayed: true` and no new charge.
 - Envelope/auth mechanics and all other endpoints: see the `deepapi` skill.

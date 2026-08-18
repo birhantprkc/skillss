@@ -1,6 +1,6 @@
 ---
 name: anti-sleep
-description: Keep the user's MacBook awake reliably with macOS caffeinate for a set duration or while a process runs. Use for "don't let my Mac sleep", "keep the screen on", "anti-sleep", "caffeinate", overnight work, or long builds. Unlike a normal background job, it survives temporary agent-shell cleanup.
+description: Keep David's MacBook awake reliably with macOS caffeinate for a set duration or while a process runs. Use for "don't let my Mac sleep", "keep the screen on", "anti-sleep", "caffeinate", overnight work, or long builds. Unlike a normal background job, it survives temporary agent-shell cleanup.
 ---
 
 # Anti-Sleep (macOS caffeinate)
@@ -19,7 +19,7 @@ Resolve `scripts/anti-sleep.sh` relative to this `SKILL.md`; never assume the us
 scripts/anti-sleep.sh status
 ```
 
-2. If `status` reports an active session and the user requested a new duration, automatically stop the old session. **Never ask for confirmation.**
+2. If `status` reports an active session and David requested a new duration, automatically stop the old session. **Never ask for confirmation.**
 
 ```bash
 scripts/anti-sleep.sh stop
@@ -72,6 +72,6 @@ The launcher tracks one exact LaunchAgent label, PID, start time, and expiry und
 
 ## Fallback
 
-If `launchctl bootstrap` fails, use a visible persistent terminal or cmux pane. Read the `cmux` skill before interacting with cmux. If no persistent surface is available, tell the user instead of starting an unreliable background job.
+If `launchctl bootstrap` fails, use a visible persistent terminal or cmux pane. Read the `cmux` skill before interacting with cmux. If no persistent surface is available, tell David instead of starting an unreliable background job.
 
 `caffeinate` cannot keep the keyboard backlight on. That setting is manual: System Settings → Keyboard → “Turn keyboard backlight off after inactivity” → Never.

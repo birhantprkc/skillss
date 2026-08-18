@@ -1,6 +1,6 @@
 ---
 name: corral-launch-agents
-description: Launch new CLI coding agents through Corral Design 1, or correctly reopen existing agent sessions inside a Corral-active Herdr repository. Use when the user asks to launch, spawn, batch-start, reopen, relaunch, or resume agents. New launches create Corral-owned tasks; resumptions reuse existing worktrees and sessions.
+description: Launch new CLI coding agents through Corral Design 1, or correctly reopen existing agent sessions inside a Corral-active Herdr repository. Use when David asks to launch, spawn, batch-start, reopen, relaunch, or resume agents. New launches create Corral-owned tasks; resumptions reuse existing worktrees and sessions.
 ---
 
 # Corral Launch Agents
@@ -57,7 +57,7 @@ herdr --session "$SESSION" pane read "$PANE_ID" \
 
 Confirm the terminal title, conversation tail, and `foreground_cwd`. Resuming restores conversation history, not the old process environment.
 
-Corral adoption is separate and normally unnecessary. Use it only when the user explicitly asks to turn an external existing worktree into a persisted Corral task. Do not adopt merely to restore Herdr grouping or resume a CLI chat.
+Corral adoption is separate and normally unnecessary. Use it only when David explicitly asks to turn an external existing worktree into a persisted Corral task. Do not adopt merely to restore Herdr grouping or resume a CLI chat.
 
 ## Use the helper
 

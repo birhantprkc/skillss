@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Codex CLI is OpenAI's terminal coding agent. `codex exec` runs it non-interactively:
 it works autonomously in a sandbox, streams progress to stderr, and prints only the
-final message to stdout. Auth reuses the user's ChatGPT subscription — never an API key.
+final message to stdout. Auth reuses David's ChatGPT subscription — never an API key.
 
 ## When to delegate
 
@@ -25,7 +25,7 @@ codex --version       # missing? npm i -g @openai/codex  (or: brew install --cas
 codex login status    # exit 0 + "Logged in using ChatGPT" = ready
 ```
 
-Not logged in → stop and tell the user to run `codex login` (one-time browser OAuth).
+Not logged in → stop and tell David to run `codex login` (one-time browser OAuth).
 Never read, print, or copy credentials (`~/.codex/auth.json`).
 
 ## Launch
@@ -84,8 +84,8 @@ codex exec --cd /tmp/wt-taskA --model gpt-5.6-sol \
 ## Failure modes
 
 - Hangs forever with no output → stdin was left open. Kill it, relaunch with `</dev/null`.
-- `codex login status` non-zero → the user must run `codex login`. Don't work around it.
-- ChatGPT plan rate limit hit → report to the user; never retry in a loop.
+- `codex login status` non-zero → David must run `codex login`. Don't work around it.
+- ChatGPT plan rate limit hit → report to David; never retry in a loop.
 - "Not a git repo" error → add `--skip-git-repo-check`, or init a repo first.
 - Network is blocked inside the workspace-write sandbox by default. If the task
   needs it (installs, API calls): `-c sandbox_workspace_write.network_access=true`.

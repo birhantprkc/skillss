@@ -1,6 +1,6 @@
 ---
 name: fable-review
-description: 'Launch a Fable 5 Max 1M subagent to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says "/fable-review", "fable review", or asks for Fable to review the code. Differentiator: reviewer model is Fable 5 Max 1M — for a GPT reviewer use gpt-review.'
+description: 'Launch a Fable 5 Max 1M subagent to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when David says "/fable-review", "fable review", or asks for Fable to review the code. Differentiator: reviewer model is Fable 5 Max 1M — for a GPT reviewer use gpt-review.'
 ---
 
 # Fable Review

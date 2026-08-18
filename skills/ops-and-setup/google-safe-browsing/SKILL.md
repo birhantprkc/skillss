@@ -9,10 +9,10 @@ One upstream blocklist (Google Safe Browsing) feeds Chrome, Brave, Safari, Firef
 
 ## Quick check: is a site flagged?
 
-```bash
+bash
 # Replace the domain. Check apex AND www — they are scored separately.
 curl -s "https://transparencyreport.google.com/transparencyreport/api/v3/safebrowsing/status?site=example.com"
-```
+
 
 Response is `)]}'` followed by `[["sb.ssr", STATUS, bool, bool, bool, bool, bool, timestamp_ms, "site"]]`:
 
@@ -46,4 +46,4 @@ Human-readable version: `https://transparencyreport.google.com/safe-browsing/sea
 
 ## Worked example
 
-`example-brand-domain.com` (2026-07): internal team tool, domain contained a third-party trademark, anonymous visitors were redirected straight to a "Example Brand"-branded email+password form, plus a public waitlist form. Flagged as deceptive site; blocked in Brave/Chrome. Fix: deleted waitlist page, added neutral `/welcome` landing (ownership + non-affiliation notice), de-branded all logged-out pages, then Search Console review. Code was never the problem.
+A domain containing a third-party brand (e.g. `brand-alpha.example`) was an internal team tool: anonymous visitors were redirected straight to a brand-named email+password form, plus a public waitlist form. Flagged as deceptive site; blocked in multiple browsers. Fix: deleted waitlist page, added neutral `/welcome` landing (ownership + non-affiliation notice), de-branded all logged-out pages, then Search Console review. Code was never the problem.

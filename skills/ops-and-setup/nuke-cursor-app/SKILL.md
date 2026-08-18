@@ -1,6 +1,6 @@
 ---
 name: nuke-cursor-app
-description: 'End-to-end Cursor IDE restart on the user''s MacBook: snapshot metrics, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when the user explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
+description: 'End-to-end Cursor IDE restart on David''s MacBook: snapshot metrics, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when David explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
 disable-model-invocation: true
 ---
 
@@ -27,7 +27,7 @@ that all live under the `/Applications/Cursor.app` bundle path.
   never by the bare word "cursor".
 - Do NOT touch `CursorUIViewService` — despite the name it is a macOS
   system text-input service, not part of the Cursor app.
-- Warn the user first if you have reason to think an important agent run is
+- Warn David first if you have reason to think an important agent run is
   in flight; killing Cursor kills its local agent sessions.
 - The macbook-metrics collector OWNS `cursor-metrics.sqlite3`. Read it
   ONLY with `sqlite3 -readonly`. Never write to it.
@@ -84,7 +84,7 @@ Note in the log whether graceful quit worked or force-kill was needed.
 
 ### 3. Relaunch and verify
 
-Skip this step only if the user asked to keep Cursor closed
+Skip this step only if David asked to keep Cursor closed
 ("nuke cursor and keep it closed").
 
 ```bash
@@ -113,7 +113,7 @@ ps -axo rss,comm | awk 'index($0, "/Applications/Cursor.app") {n++; s+=$1} END {
 
 Append both outputs to `$LOG` under an "after restart" heading.
 
-### 5. Report to the user
+### 5. Report to David
 
 End with one plain-English summary line, for example:
 
@@ -126,6 +126,6 @@ the step 3 relaunch check.
 ## Known failure modes
 
 - After a force-kill, Cursor may show a "restore windows?" dialog on
-  relaunch. That is expected — tell the user to click Restore.
+  relaunch. That is expected — tell David to click Restore.
 - If the metrics DB has no recent rows (collector stalled), say so in the
   log and the report; the `ps` readouts still give valid before/after.

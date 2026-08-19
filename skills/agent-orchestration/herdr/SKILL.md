@@ -1,6 +1,6 @@
 ---
 name: herdr
-description: Operate and coordinate AI agents running inside Herdr in Ghostty. Use when David says "Use the Herdr skill," mentions Herdr, or asks to inspect, message, wait for, or coordinate agents in a Herdr workspace. Herdr-specific; do not use for cmux or ordinary terminal sessions.
+description: Operate and coordinate AI agents running inside Herdr in Ghostty. Use when the user says "Use the Herdr skill," mentions Herdr, or asks to inspect, message, wait for, or coordinate agents in a Herdr workspace. Herdr-specific; do not use for cmux or ordinary terminal sessions.
 ---
 
 # Herdr
@@ -16,7 +16,7 @@ test "${HERDR_ENV:-}" = "1"
 test -n "${HERDR_WORKSPACE_ID:-}"
 ```
 
-If either fails, do not pretend to access other agents; tell David the agent must be launched inside Herdr.
+If either fails, do not pretend to access other agents; tell the user the agent must be launched inside Herdr.
 
 One-time installation:
 
@@ -45,7 +45,7 @@ herdr pane read <pane-id> --source recent-unwrapped --lines 120
 
 Stay inside the current workspace. Read before messaging; for inspection-only requests, send nothing. After messaging, wait for `done`, `idle`, or `blocked`, then read the output again. Never assume the prompt was acted on.
 
-Do not close, rename, move, resize, or reconfigure panes you did not create. Do not create or close panes unless David explicitly asks. “Use the Herdr skill” means execute these CLI operations, not merely explain them.
+Do not close, rename, move, resize, or reconfigure panes you did not create. Do not create or close panes unless the user explicitly asks. “Use the Herdr skill” means execute these CLI operations, not merely explain them.
 
 ## Sharp edges (empirically verified)
 
@@ -94,7 +94,7 @@ Hard-won facts from driving herdr in production. Trust these over intuition.
 - For risky experiments use an isolated named session (never `default`), and re-check `herdr session list --json` immediately before any stop/delete.
 - `herdr integration install <harness>` (claude, codex, cursor, pi, ...) enables native status detection per agent. `herdr notification show <title>` fires a desktop-style alert.
 
-## Launching agents in new panes (when David asks)
+## Launching agents in new panes (when the user asks)
 
 ALWAYS launch agents with auto-approval — a worker in an unattended pane stalls forever on a y/n prompt nobody answers:
 
@@ -102,13 +102,13 @@ ALWAYS launch agents with auto-approval — a worker in an unattended pane stall
 - Codex CLI: `codex --yolo "task"`
 - Claude Code: `claude --dangerously-skip-permissions "task"`
 
-This is safe only because David's `global-agent-guardrails` deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
+This is safe only if a deny-list guardrail hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
 
 NEVER verify a launch with `sleep N && pane read` — that is a non-herdr antipattern. Use the native waits: `herdr agent wait <pane> --status working --timeout MS` (agent picked up the task) or `herdr wait output <pane> --match <text>`, then read the pane.
 
 ### Cursor CLI specifics
 
-The real binary is `cursor-agent` (`agent` is an alias/new docs name — don't rely on it in scripts). David's shorthand `cur` = `cursor-agent --yolo`: fine to type into an interactive pane, but use the full binary in scripts — aliases don't expand there. Launch into an existing pane:
+The real binary is `cursor-agent` (`agent` is an alias/new docs name — don't rely on it in scripts). The user's shorthand `cur` = `cursor-agent --yolo`: fine to type into an interactive pane, but use the full binary in scripts — aliases don't expand there. Launch into an existing pane:
 
 ```bash
 herdr pane run <pane-id> "cd <worktree> && cursor-agent --model gpt-5.3-codex-high --yolo 'fix the failing tests'"

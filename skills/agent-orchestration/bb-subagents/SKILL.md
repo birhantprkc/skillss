@@ -46,7 +46,7 @@ Add `--service-tier fast` only when the user says **fast**.
 
 **Provider.** From `bb provider list --json`:
 
-| User says | Provider id |
+| The user says | Provider id |
 |---|---|
 | Cursor CLI / Cursor subscription | `acp-cursor` |
 | Codex / Codex subscription / ChatGPT sub | `codex` |
@@ -62,7 +62,7 @@ If the user does not name a reasoning level, use that model's `defaultReasoningE
 
 ### Cursor CLI — Grok 4.6 Extra High Fast
 
-User: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
+The user: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
 
 bash
 --provider acp-cursor \
@@ -81,7 +81,7 @@ Traps:
 
 ### Codex — GPT 5.6 Sol Max
 
-User: "GPT 5.6 Sol Max, via the Codex subscription"
+The user: "GPT 5.6 Sol Max, via the Codex subscription"
 
 bash
 --provider codex \
@@ -140,7 +140,7 @@ Always pass `--json` and `--title`.
 
 | Mode | Meaning |
 |---|---|
-| `accept-edits` | Sandbox on. User approves escalations. |
+| `accept-edits` | Sandbox on. The user approves escalations. |
 | `auto` | Sandbox on. Provider auto-approves. Codex/Claude have this. Cursor ACP does not. |
 | `full` | No sandbox. Needed for prod DB, many network tools, and "just go". |
 
@@ -178,3 +178,4 @@ bb thread list --archived
 Do not use `bb thread delete` unless the user wants it gone forever. Do not use `--visibility hidden` as a substitute for archive. Hidden is sidebar-only; archive is the lifecycle close-out.
 
 Bulk, one worktree/environment: `bb environment archive-threads <environment-id>`.
+

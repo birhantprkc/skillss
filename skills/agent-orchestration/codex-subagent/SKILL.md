@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Codex CLI is OpenAI's terminal coding agent. `codex exec` runs it non-interactively:
 it works autonomously in a sandbox, streams progress to stderr, and prints only the
-final message to stdout. Auth reuses the user's ChatGPT subscription — never an API key.
+final message to stdout. Auth reuses David's ChatGPT subscription — never an API key.
 
 ## When to delegate
 
@@ -20,17 +20,17 @@ Do NOT delegate tasks that need conversation context you can't fully write into 
 
 ## Preflight
 
-bash
+```bash
 codex --version       # missing? npm i -g @openai/codex  (or: brew install --cask codex)
 codex login status    # exit 0 + "Logged in using ChatGPT" = ready
+```
 
-
-Not logged in → stop and tell the user to run `codex login` (one-time browser OAuth).
+Not logged in → stop and tell David to run `codex login` (one-time browser OAuth).
 Never read, print, or copy credentials (`~/.codex/auth.json`).
 
 ## Launch
 
-bash
+```bash
 OUT=$(mktemp /tmp/codex-out.XXXXXX)
 codex exec \
   --cd /path/to/repo \
@@ -40,7 +40,7 @@ codex exec \
   --output-last-message "$OUT" \
   "Full task prompt: goal, constraints, files to touch, definition of done." \
   </dev/null
-
+```
 
 - Always use GPT 5.6 Sol (`gpt-5.6-sol`). Default reasoning effort to `high`.
   Pass both flags explicitly on every new Codex run.
@@ -58,34 +58,34 @@ codex exec \
 
 ## Collect results
 
-bash
+```bash
 cat "$OUT"                            # final message = the deliverable
 git -C /path/to/repo status --short   # see what Codex actually changed
-
+```
 
 Follow-up in the same session (run from the same cwd — resume filters by cwd):
 
-bash
+```bash
 codex exec resume --last "follow-up instruction" </dev/null
-
+```
 
 ## Parallel runs
 
 Parallelize only genuinely independent tasks, and assign file ownership upfront so
 results merge cleanly. One git worktree per Codex run — never two in the same tree:
 
-bash
+```bash
 git worktree add /tmp/wt-taskA -b codex/task-a
 codex exec --cd /tmp/wt-taskA --model gpt-5.6-sol \
   --config model_reasoning_effort=high --sandbox workspace-write \
   -o /tmp/outA.md "task A" </dev/null
-
+```
 
 ## Failure modes
 
 - Hangs forever with no output → stdin was left open. Kill it, relaunch with `</dev/null`.
-- `codex login status` non-zero → the user must run `codex login`. Don't work around it.
-- ChatGPT plan rate limit hit → report to the user; never retry in a loop.
+- `codex login status` non-zero → David must run `codex login`. Don't work around it.
+- ChatGPT plan rate limit hit → report to David; never retry in a loop.
 - "Not a git repo" error → add `--skip-git-repo-check`, or init a repo first.
 - Network is blocked inside the workspace-write sandbox by default. If the task
   needs it (installs, API calls): `-c sandbox_workspace_write.network_access=true`.

@@ -28,32 +28,32 @@ Corral's launch helper is the wrong tool for resumptions. Load the `herdr` and `
    If it is open in an incorrectly created top-level workspace, confirm it is idle with no unsent draft, close only that workspace, and never delete the worktree.
 4. Reopen the existing linked worktree with repository metadata:
 
-```bash
+bash
 herdr --session "$SESSION" worktree open \
   --cwd "$PRIMARY_CHECKOUT" \
   --path "$WORKTREE_PATH" \
   --label "$WORKTREE_NAME" \
   --no-focus
-```
+
 
 This opens the existing path; it does not create a Git worktree or Corral task. It is the required Corral-compatible layout because it groups the worktree beneath its repository while preserving the worktree name. If the result says `already_open: true`, reuse that linked workspace. Do not use `workspace create`; it lacks Git worktree metadata and produces a top-level space. Do not use `tab create` under the primary workspace; it shows the repository name instead of a linked worktree entry.
 
 5. Capture `root_pane.pane_id` from the result and resume the exact chat without sending a prompt:
 
-```bash
+bash
 herdr --session "$SESSION" pane run "$PANE_ID" \
   "cursor-agent --yolo --trust --resume $CHAT_ID"
-```
+
 
 6. Verify the workspace has the expected `checkout_path`, `repo_root`, shared `repo_key`, and `is_linked_worktree: true`. Then verify the history:
 
-```bash
+bash
 herdr --session "$SESSION" workspace list
 herdr --session "$SESSION" agent wait "$PANE_ID" --until idle --timeout 30000
 herdr --session "$SESSION" pane read "$PANE_ID" \
   --source recent-unwrapped \
   --lines 200
-```
+
 
 Confirm the terminal title, conversation tail, and `foreground_cwd`. Resuming restores conversation history, not the old process environment.
 
@@ -63,23 +63,23 @@ Corral adoption is separate and normally unnecessary. Use it only when the user 
 
 Resolve the installed skill directory without hardcoding a machine path:
 
-```bash
+bash
 CORRAL_LAUNCH_SKILL_DIR="${AGENT_SKILLS_DIR:-$HOME/.agents/skills}/corral-launch-agents"
 CORRAL_LAUNCH_HELPER="$CORRAL_LAUNCH_SKILL_DIR/scripts/corral_agents.py"
-```
+
 
 Run preflight checks first. Always pass the intended named Herdr session when known:
 
-```bash
+bash
 python3 "$CORRAL_LAUNCH_HELPER" doctor --session corral
 python3 "$CORRAL_LAUNCH_HELPER" list-presets --session corral --agent pi
-```
+
 
 If the session is stopped, report that clearly. Do not silently start, stop, or delete Herdr sessions.
 
 Dry-run the exact launch before creating anything:
 
-```bash
+bash
 python3 "$CORRAL_LAUNCH_HELPER" launch \
   --session corral \
   --repo <repository-checkout> \
@@ -89,15 +89,15 @@ python3 "$CORRAL_LAUNCH_HELPER" launch \
   --prompt "<task prompt>" \
   --no-focus \
   --dry-run
-```
+
 
 Review the resolved session, preset, repository, worktree destination, base, priority, dirty-checkout policy, and prompt length. Then repeat without `--dry-run` only when the launch is authorized.
 
 To choose an exact new worktree directory, add:
 
-```bash
+bash
 --worktree-path <new-worktree-path>
-```
+
 
 To launch several agents, use `batch` with a JSON task file. Corral itself permits many launcher processes but caps the preparation pipeline at three concurrent jobs. Read [references/batch-launches.md](references/batch-launches.md) before a batch launch.
 
@@ -105,12 +105,12 @@ To launch several agents, use `batch` with a JSON task file. Corral itself permi
 
 The helper returns only after Corral has created the worktree and Herdr has detected the interactive agent. Verify persisted and live state:
 
-```bash
+bash
 python3 "$CORRAL_LAUNCH_HELPER" status \
   --session corral \
   --task "<task title>" \
   --live
-```
+
 
 Report the Corral task ID, title, priority, preset, worktree path, pane ID, persisted launch status, and live Herdr agent status. If launch fails after worktree creation, preserve the failed task/worktree for diagnosis; do not clean it automatically.
 
@@ -132,7 +132,7 @@ Report the Corral task ID, title, priority, preset, worktree path, pane ID, pers
 
 For helper options, run:
 
-```bash
+bash
 python3 "$CORRAL_LAUNCH_HELPER" --help
 python3 "$CORRAL_LAUNCH_HELPER" launch --help
-```
+

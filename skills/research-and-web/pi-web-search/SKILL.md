@@ -11,9 +11,9 @@ The `pi-web-access` package is installed globally. Zero-config via Exa MCP (no A
 
 Every `web_search` call MUST include `workflow: "none"`. This skips the interactive browser curator popup (the user does not want it opening). No exceptions — single query or batched `queries`, always set `workflow: "none"`.
 
-
+```
 web_search({ queries: ["query 1", "query 2"], workflow: "none" })
-
+```
 
 ## Tools
 
@@ -44,12 +44,12 @@ A single batched `web_search` call counts each query in `queries[]` toward the t
 itself — URLs to cite, compare, or scrape — use DeepAPI instead. Also the path to
 take if the Exa → Perplexity → Gemini chain fails.
 
-bash
-[ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
+```bash
+[ -n "$YOUR_DEEPAPI_API_KEY" ] || . /path/to/deepapi-env-file
 curl -s --max-time 60 "https://deepapi.co/v1/search/web" \
-  -H "Authorization: Bearer $DEEPAPI_API_KEY" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $YOUR_DEEPAPI_API_KEY" -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{"query": "your search terms", "maxResults": 5, "maxCostUsd": "0.05"}'
-
+```
 
 Results are in `.output` (title, url, snippet per item). Query under 500 chars. Full details: `deepapi` skill.

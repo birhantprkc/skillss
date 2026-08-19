@@ -50,7 +50,7 @@ Plus: tell the agent what to read first, ask it to work in checkpoints with a sh
 
 When the user wants a quick `/goal` instruction, produce a structured markdown block with one line per contract item (proper newlines, not flowing prose). **Do not prefix the output with `/goal`** — the user adds the slash command themselves in the composer. Emit only the contract body. Template:
 
-
+```
 **Objective:** <one-sentence objective>
 **Read first:** <files/PLAN.md/issue>
 **Constraints:** <what not to change, libs, conventions>
@@ -58,29 +58,29 @@ When the user wants a quick `/goal` instruction, produce a structured markdown b
 **Document:** Write concise, targeted documentation for all changes — create new `.md` files or update existing docs as needed.
 **Checkpoints:** work in checkpoints and log progress briefly
 **Stop when:** <verifiable condition>, OR when further changes require human/product input
-
+```
 
 ### Example (migration)
 
-
+```
 **Objective:** Migrate this project from Pydantic v1 to v2.
 **Read first:** pyproject.toml, src/, tests/
 **Constraints:** no public API changes; keep imports backwards-compatible via shims if needed; no new dependencies
 **Validate:** `pytest -q` after each change
 **Checkpoints:** work in checkpoints; log progress briefly
 **Stop when:** full suite passes with zero deprecation warnings, OR when a change requires architecture decisions
-
+```
 
 ### Example (coverage lift)
 
-
+```
 **Objective:** Raise coverage in src/auth/ from ~38% to ≥75%.
 **Read first:** src/auth/, tests/auth/, AGENTS.md
 **Constraints:** no new deps; mirror existing test style; do not modify production code unless strictly required for testability
 **Validate:** `pytest --cov=src/auth --cov-report=term-missing`
 **Checkpoints:** work in checkpoints; log coverage delta each one
 **Stop when:** coverage ≥75% AND all tests pass, OR when uncovered code needs design changes
-
+```
 
 ### Writing rules
 - **One objective, one stop condition.** Not a backlog.

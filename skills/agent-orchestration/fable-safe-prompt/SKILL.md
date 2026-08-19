@@ -46,11 +46,11 @@ If no benign defensive equivalent exists for a sentence (it's purely offensive),
 
 1. Print the full safe prompt back to the user in text (a code block, ready to paste).
 2. **Copy it to the clipboard** so the user can paste immediately:
-   ```bash
+   bash
    pbcopy <<'EOF'
    <the full safe prompt>
    EOF
-   ```
+   
    Confirm in one line that it's on the clipboard.
 3. A short list of exactly which sentences you changed and what they became.
 4. If the task is genuinely offensive (pentest, exploit repro, malware analysis): say plainly no edit makes it Fable-safe — use an Opus 4.8 fallback or vetted Mythos, not Fable 5.

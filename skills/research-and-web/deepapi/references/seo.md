@@ -1,6 +1,6 @@
 # Seo — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `seo` rows of the `deepapi` skill router. Bundle version: c5a387bc96e1. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `seo` rows of the `deepapi` skill router. Bundle version: a2fd8bb6e07b. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 

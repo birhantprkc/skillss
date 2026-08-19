@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: c5a387bc96e1. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: a2fd8bb6e07b. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -147,7 +147,7 @@ Request body schema:
       "minimum": 1,
       "maximum": 100,
       "default": 10,
-      "description": "Optional cap on returned results. Defaults to 10, maximum 100. 1-10 results cost the same flat price, so never ask for fewer than 10; 11+ doubles the charge."
+      "description": "Optional cap on returned results. Defaults to 10, maximum 100. 1-10 results cost the same flat price, so never ask for fewer than 10; above 10, each extra page of ~10 results adds one more flat-price charge (bounded by maxCostUsd). For requests above 10, output.partialReason appears when pagination stops early because of upstream_failure, cost_cap, or page_limit. When absent, the request either reached maxResults or the source had no more results."
     },
     "maxCostUsd": {
       "type": "string",

@@ -38,7 +38,7 @@ that all live under the `/Applications/Cursor.app` bundle path.
 
 ### 1. Snapshot BEFORE killing
 
-```bash
+bash
 DB="$HOME/Library/Application Support/macbook-metrics/cursor-metrics.sqlite3"
 LOG_DIR="$HOME/Library/Application Support/macbook-metrics/nuke-logs"
 mkdir -p "$LOG_DIR"
@@ -53,7 +53,7 @@ ps -axo rss,comm | awk 'index($0, "/Applications/Cursor.app") {n++; s+=$1} END {
 # Last 30 min from the collector (read-only)
 sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), role, process_count, ROUND(cpu_percent,1), ROUND(resident_bytes/1073741824.0,2) || ' GB' FROM raw_samples WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
 sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), kind, role, reason, memory_pressure FROM events WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
-```
+
 
 Write all four outputs into `$LOG` with headings: process list, totals,
 metrics (last 30 min), events (last 30 min). The after-restart reading is
@@ -61,7 +61,7 @@ appended in step 4 — so one file tells the whole story of this nuke.
 
 ### 2. Kill every Cursor process
 
-```bash
+bash
 # Graceful quit first — lets Cursor save session state
 osascript -e 'tell application "Cursor" to quit' 2>/dev/null
 sleep 3
@@ -76,7 +76,7 @@ ps -axo pid,comm | grep "/Applications/Cursor.app" | grep -v grep
 
 # Final check — must print "all Cursor processes gone"
 ps -axo pid,comm | grep "/Applications/Cursor.app" | grep -v grep && echo "STILL RUNNING" || echo "all Cursor processes gone"
-```
+
 
 The graceful quit often fails exactly when this skill is needed — a leaked
 renderer blocks the main thread — which is why the pkill/kill steps exist.
@@ -87,7 +87,7 @@ Note in the log whether graceful quit worked or force-kill was needed.
 Skip this step only if the user asked to keep Cursor closed
 ("nuke cursor and keep it closed").
 
-```bash
+bash
 sleep 2
 open -a Cursor
 
@@ -97,19 +97,19 @@ for i in $(seq 1 15); do
   sleep 1
 done
 ps -axo pid,comm | grep "/Applications/Cursor.app/Contents/MacOS/Cursor" | grep -v grep
-```
+
 
 If the poll times out, report that — never claim Cursor is back without
 seeing the main process.
 
 ### 4. After-restart reading
 
-```bash
+bash
 sleep 10   # let Cursor settle and restore windows
 
 ps -axo pid,rss,comm | grep "/Applications/Cursor.app" | grep -v grep
 ps -axo rss,comm | awk 'index($0, "/Applications/Cursor.app") {n++; s+=$1} END {printf "%d processes, %.1f GB", n, s/1048576; print ""}'
-```
+
 
 Append both outputs to `$LOG` under an "after restart" heading.
 

@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: 014fe6c78702. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: d82e01f18435. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -51,7 +51,7 @@ Safety:
 - Do not trust exact social handles or account IDs from research output; verify known handles through the relevant profile endpoint before using them.
 - Summarize the returned sources when sources are present.
 - If output.completeness is partial, use the returned answer but tell the user it ended at the output limit.
-- Omit mode for the default sourced brief. Pass mode raw to receive cleaned collected evidence in output.answer.
+- mode raw (the default) returns cleaned evidence blocks — synthesize the answer yourself and cite via each block's [n] index into sources. Pass mode clean when a human will read the answer directly and you want a finished written brief; clean is slower and costs slightly more.
 
 Request body schema:
 ```json
@@ -79,8 +79,8 @@ Request body schema:
         "clean",
         "raw"
       ],
-      "default": "clean",
-      "description": "Optional answer style. Defaults to clean, which returns a sourced research brief. raw returns the cleaned collected evidence in output.answer instead. Response shape is the same either way."
+      "default": "raw",
+      "description": "Optional answer style. raw (the default) skips the answer-writing step and returns the cleaned collected evidence in output.answer — fastest and cheapest, built for agents that reason over evidence themselves; each evidence block's [n] index maps to the sources array. clean adds a written, sourced research brief on top of the same evidence — slower and slightly costlier, best when a human reads the answer directly. Response shape is identical either way."
     },
     "maxCostUsd": {
       "type": "string",

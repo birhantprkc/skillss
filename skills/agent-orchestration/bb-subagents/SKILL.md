@@ -5,7 +5,7 @@ description: 'Launch a new bb worker thread with an explicit project, provider, 
 
 # bb-subagents
 
-Spawn a sibling bb thread the way the user launches them. Read this before any `bb thread spawn`.
+Spawn a bb thread the way the user launches them. Read this before any `bb thread spawn`.
 
 Use `bb-cli` for status, tell, wait, inspect, automations. This skill is spawn-only.
 
@@ -15,12 +15,11 @@ Use `bb-cli` for status, tell, wait, inspect, automations. This skill is spawn-o
 - Never guess provider or model IDs. Lookup, then spawn.
 - After spawn: do **not** `bb thread open`, `--split`, or focus the new thread unless the user asks. Just launch. Report the thread id. Stop.
 - Do **not** poll, `bb thread wait`, or read logs unless the user asks.
-- Default to a **root** thread. Use `--parent-self` / `--parent-thread` only when the user wants a child that reports to this thread.
 - Prefer bare `bb`. If `BB_CLI` is set, `"$BB_CLI"` is fine.
 
 ## Recipe
 
-bash
+```bash
 bb project list --json
 bb provider list --json
 bb provider models <provider-id> --json
@@ -34,9 +33,26 @@ bb thread spawn --json \
   --permission-mode full \
   --title "Short title" \
   --prompt "..."
-
+```
 
 Add `--service-tier fast` only when the user says **fast**.
+
+## Parent / sidebar nest
+
+`--parent-self` and `--parent-thread` are optional. Use them when it makes sense — not on every spawn.
+
+`--parent-self` parents the new thread to the current thread (`BB_THREAD_ID`). The left sidebar then nests the child under this thread (indented, expandable), like a worker under a manager.
+
+`--parent-thread <id>` parents it to a specific other thread. Do not combine it with `--parent-self`.
+
+Omit both for a **root** thread — its own top-level sidebar row, not nested.
+
+When it makes sense: this thread is coordinating the work, the user asked for a worker under this session, or the job is a clear subtask of this thread. Skip it for unrelated one-off work that should sit as its own top-level thread.
+
+```bash
+# add when it makes sense — not required
+--parent-self
+```
 
 `environmentId` is often `null` in the spawn JSON. The worktree is still creating. That is fine.
 
@@ -62,14 +78,14 @@ If the user does not name a reasoning level, use that model's `defaultReasoningE
 
 ### Cursor CLI — Grok 4.6 Extra High Fast
 
-The user: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
+User: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
 
-bash
+```bash
 --provider acp-cursor \
 --model cursor-grok-4.6-medium \
 --reasoning-level xhigh \
 --service-tier fast
-
+```
 
 Traps:
 
@@ -81,13 +97,13 @@ Traps:
 
 ### Codex — GPT 5.6 Sol Max
 
-The user: "GPT 5.6 Sol Max, via the Codex subscription"
+User: "GPT 5.6 Sol Max, via the Codex subscription"
 
-bash
+```bash
 --provider codex \
 --model gpt-5.6-sol \
 --reasoning-level max
-
+```
 
 Traps:
 
@@ -124,7 +140,7 @@ Read-only jobs must say **no code changes, no git writes, no database writes** i
 
 Use a heredoc so quotes survive:
 
-bash
+```bash
 --prompt "$(cat <<'EOF'
 Objective: ...
 Constraints: READ ONLY. ...
@@ -132,7 +148,7 @@ Deliverable: ...
 Report back: ...
 EOF
 )"
-
+```
 
 Always pass `--json` and `--title`.
 
@@ -163,19 +179,18 @@ Do not dump the prompt. Do not open the thread. Do not wait for it.
 
 Do not auto-archive after spawn.
 
-bash
+```bash
 bb thread archive <id> --json
 bb thread stop <id>
-
+```
 
 Archive first, then stop. Archive also archives child threads. Stop frees the agent runtime; the thread history stays.
 
-bash
+```bash
 bb thread unarchive <id> --json
 bb thread list --archived
-
+```
 
 Do not use `bb thread delete` unless the user wants it gone forever. Do not use `--visibility hidden` as a substitute for archive. Hidden is sidebar-only; archive is the lifecycle close-out.
 
 Bulk, one worktree/environment: `bb environment archive-threads <environment-id>`.
-

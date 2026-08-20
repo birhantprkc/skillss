@@ -1,6 +1,6 @@
 # Send Email — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `send-email` rows of the `deepapi` skill router. Bundle version: d82e01f18435. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `send-email` rows of the `deepapi` skill router. Bundle version: 81effd0e7ace. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -719,3 +719,307 @@ Example request body:
 ```
 
 Example path params: `{"emailIdentityId":"email_identity_456"}`
+
+## Find Email
+
+`POST /v1/email/find`
+
+Find one person's professional email address from their name plus a company domain or company name. Returns the most likely address with a confidence score, catch-all status, verification result, and the public sources it was seen on.
+
+- Capability: `email.find`
+- Scope: `email:find`
+- Side effects: Runs a paid email lookup and debits credits when an address is found.
+- Cost: Defaults to maxCostUsd 0.0735. Pass maxCostUsd or maxCostMicrousd to choose a different customer spend cap. You pay only for a found address: a lookup that returns output.email null is free (debitMicrousd 0). The final debit is capped and reported as debitMicrousd. Typical price: ~$0.0735 per found address, nothing when none is found.
+- Idempotency-Key: required
+- Polling: This route returns a terminal envelope directly.
+
+Safety:
+- Provide one company identifier: use domain whenever you know it; otherwise use company. A supplied domain controls the lookup and company is ignored. Neither field is individually mandatory, but at least one is required.
+- One person per call. Loop over your list and keep each lookup separate.
+- output.email is null when no address was found. That result is free and is not a failure — do not retry it with a different spelling more than once.
+- Treat output.confidence as directional, not a guarantee. Verify the address before sending.
+- Treat acceptAll true as unverified. The domain accepts mail for any address, so the mailbox itself is unproven.
+- The full address is returned once. Replaying the original request returns it masked, because DeepAPI does not keep the address after answering.
+- Only contact people for legitimate business reasons, and honour opt-outs. A 451 email_find_opted_out means never contact this person again.
+
+Request body schema:
+```json
+{
+  "type": "object",
+  "required": [
+    "firstName",
+    "lastName"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "domain"
+      ]
+    },
+    {
+      "required": [
+        "company"
+      ]
+    }
+  ],
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "The person's first name."
+    },
+    "lastName": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "The person's last name."
+    },
+    "domain": {
+      "type": "string",
+      "description": "Company domain such as example.com, or a URL to take the hostname from. Recommended when known because it avoids ambiguous company-name resolution. Required unless company is set. A supplied domain always wins over company."
+    },
+    "company": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Company name such as Stripe. Use it when the domain is unknown; DeepAPI resolves it to a domain. It is optional and ignored when domain is supplied."
+    },
+    "maxCostUsd": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d{1,6})?$",
+      "default": "0.0735",
+      "description": "Optional customer spend cap in USD. Defaults to 0.0735."
+    },
+    "maxCostMicrousd": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional customer spend cap in USD micro-dollars."
+    },
+    "dryRun": {
+      "type": "boolean",
+      "default": false,
+      "description": "Zero-spend preview: validate this request and return the exact credit hold it would place (status dry_run plus an estimate object) without reserving, charging, or running anything."
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+Response schema:
+```json
+{
+  "$ref": "#/components/schemas/PublicEnvelope"
+}
+```
+
+Example request body:
+```json
+{
+  "firstName": "Avery",
+  "lastName": "Chen",
+  "domain": "example.com",
+  "maxCostUsd": "0.0735"
+}
+```
+
+## Verify Email
+
+`POST /v1/email/verify`
+
+Check one email address and return a standardized deliverability verdict, score, and compact evidence flags.
+
+- Capability: `email.verify`
+- Scope: `email:verify`
+- Side effects: Runs a paid verification only when the result is conclusive and non-disposable.
+- Cost: Defaults to maxCostUsd 0.03675. Unknown and disposable results are free; a conclusive result costs $0.03675 and the final debit is reported in debitMicrousd. Typical price: ~$0.03675 per conclusive result.
+- Idempotency-Key: required
+- Polling: This route returns a terminal envelope directly.
+
+Safety:
+- Process one email address or company domain per call.
+- A deliverable verdict is evidence, not permission to contact someone.
+- Treat verdict risky or acceptAll true as uncertain. Do not present it as a confirmed mailbox.
+- Unknown and disposable results are successful free outcomes. Do not retry them repeatedly.
+
+Request body schema:
+```json
+{
+  "type": "object",
+  "required": [
+    "email"
+  ],
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320,
+      "description": "One email address to process."
+    },
+    "maxCostUsd": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d{1,6})?$",
+      "description": "Optional customer spend cap in USD. Defaults to 0.03675.",
+      "default": "0.03675"
+    },
+    "maxCostMicrousd": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional customer spend cap in USD micro-dollars."
+    },
+    "dryRun": {
+      "type": "boolean",
+      "default": false,
+      "description": "Zero-spend preview: validate this request and return the exact credit hold it would place (status dry_run plus an estimate object) without reserving, charging, or running anything."
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+Response schema:
+```json
+{
+  "$ref": "#/components/schemas/PublicEnvelope"
+}
+```
+
+Example request body:
+```json
+{
+  "email": "<email-address>",
+  "maxCostUsd": "0.03675"
+}
+```
+
+## Enrich Email
+
+`POST /v1/email/enrich`
+
+Enrich one known professional email with a compact person and employment profile. Personal phone, home-location, avatar, biography, and social-feed data are omitted.
+
+- Capability: `email.enrich`
+- Scope: `email:enrich`
+- Side effects: Runs a paid enrichment only when all core fields are present.
+- Cost: Defaults to maxCostUsd 0.0147. Partial and no-match results are free; a complete result costs $0.0147 and the final debit is reported in debitMicrousd. Typical price: ~$0.0147 per complete result.
+- Idempotency-Key: required
+- Polling: This route returns a terminal envelope directly.
+
+Safety:
+- Process one email address or company domain per call.
+- Use professional enrichment only for a legitimate purpose and honour privacy requests.
+- matchStatus partial or not_found is a successful free outcome. Do not invent missing fields.
+- Do not infer sensitive traits from the returned professional profile.
+
+Request body schema:
+```json
+{
+  "type": "object",
+  "required": [
+    "email"
+  ],
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320,
+      "description": "One email address to process."
+    },
+    "maxCostUsd": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d{1,6})?$",
+      "description": "Optional customer spend cap in USD. Defaults to 0.0147.",
+      "default": "0.0147"
+    },
+    "maxCostMicrousd": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional customer spend cap in USD micro-dollars."
+    },
+    "dryRun": {
+      "type": "boolean",
+      "default": false,
+      "description": "Zero-spend preview: validate this request and return the exact credit hold it would place (status dry_run plus an estimate object) without reserving, charging, or running anything."
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+Response schema:
+```json
+{
+  "$ref": "#/components/schemas/PublicEnvelope"
+}
+```
+
+Example request body:
+```json
+{
+  "email": "<email-address>",
+  "maxCostUsd": "0.0147"
+}
+```
+
+## Enrich Company
+
+`POST /v1/company/enrich`
+
+Enrich one company domain with a compact company profile: identity, classification, location, size, and freshness.
+
+- Capability: `company.enrich`
+- Scope: `company:enrich`
+- Side effects: Runs a paid enrichment only when all core fields are present.
+- Cost: Defaults to maxCostUsd 0.0147. Partial and no-match results are free; a complete result costs $0.0147 and the final debit is reported in debitMicrousd. Typical price: ~$0.0147 per complete result.
+- Idempotency-Key: required
+- Polling: This route returns a terminal envelope directly.
+
+Safety:
+- Process one email address or company domain per call.
+- Use the company's canonical public domain when possible. URLs are reduced to their hostname.
+- matchStatus partial or not_found is a successful free outcome. Do not invent missing fields.
+
+Request body schema:
+```json
+{
+  "type": "object",
+  "required": [
+    "domain"
+  ],
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "One company domain such as example.com, or a URL to normalize."
+    },
+    "maxCostUsd": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d{1,6})?$",
+      "description": "Optional customer spend cap in USD. Defaults to 0.0147.",
+      "default": "0.0147"
+    },
+    "maxCostMicrousd": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Optional customer spend cap in USD micro-dollars."
+    },
+    "dryRun": {
+      "type": "boolean",
+      "default": false,
+      "description": "Zero-spend preview: validate this request and return the exact credit hold it would place (status dry_run plus an estimate object) without reserving, charging, or running anything."
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+Response schema:
+```json
+{
+  "$ref": "#/components/schemas/PublicEnvelope"
+}
+```
+
+Example request body:
+```json
+{
+  "domain": "example.com",
+  "maxCostUsd": "0.0147"
+}
+```

@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: a2fd8bb6e07b. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: 014fe6c78702. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -51,6 +51,7 @@ Safety:
 - Do not trust exact social handles or account IDs from research output; verify known handles through the relevant profile endpoint before using them.
 - Summarize the returned sources when sources are present.
 - If output.completeness is partial, use the returned answer but tell the user it ended at the output limit.
+- Omit mode for the default sourced brief. Pass mode raw to receive cleaned collected evidence in output.answer.
 
 Request body schema:
 ```json
@@ -71,6 +72,15 @@ Request body schema:
     "instructions": {
       "type": "string",
       "description": "Optional output preferences such as audience, depth, or format."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "clean",
+        "raw"
+      ],
+      "default": "clean",
+      "description": "Optional answer style. Defaults to clean, which returns a sourced research brief. raw returns the cleaned collected evidence in output.answer instead. Response shape is the same either way."
     },
     "maxCostUsd": {
       "type": "string",

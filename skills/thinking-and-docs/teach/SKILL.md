@@ -102,6 +102,10 @@ For skill acquisition, difficulty is the tool. Effortful retrieval is what build
 
 Each of these should be based on a **feedback loop**, where the user receives feedback on their performance. This feedback loop should be as tight as possible, giving feedback immediately - and ideally automatically.
 
+### Feedback Principle
+
+Stanford tested two ways of giving feedback to students. Group one got standard comments. Group two got the same comments with one added sentence: "I'm giving you these comments because I have very high expectations and I know you can reach them." Group two improved at four times the rate as group one, despite having the same correction.
+
 For quizzes, each answer should be exactly the same number of words (and characters, if possible). Don't give the user any clues about the answer through formatting.
 
 ## Acquiring Wisdom

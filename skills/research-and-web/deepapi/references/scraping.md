@@ -1,6 +1,6 @@
 # Scraping — DeepAPI Workflow Guide
 
-Managed workflow guide for the `scraping` rows of the `deepapi` skill router. Bundle version: 5ae219a4bf68. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Managed workflow guide for the `scraping` rows of the `deepapi` skill router. Bundle version: 2f20fd0d19a8. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`.
 
@@ -16,7 +16,7 @@ Use this reference to collect structured public data for research, monitoring, l
 | Research developers or software | `/v1/scrape/github/search` | GitHub repository, profile, issues, pulls, contents, or commits |
 | Research people, companies, or hiring | LinkedIn people, company, or jobs endpoints | LinkedIn profile or posts for deeper context |
 | Research creators and content | `/v1/scrape/youtube/search` or `/v1/scrape/tiktok/search` | YouTube transcript, channel, or shorts; TikTok profile, posts, comments, or transcript |
-| Monitor conversations and audience response | X/Twitter, Reddit, or Instagram search/list endpoints | User, posts, replies, or comments |
+| Monitor conversations and audience response | X/Twitter, Reddit, Instagram, or Threads endpoints | Use `/v1/scrape/threads/posts` for exact Threads post URLs |
 | Research advertising | `/v1/scrape/facebook/ads` | Go deep: competitor `pages` plus keyword queries, `activeStatus: "all"`, `maxItems` 100+ (see the Meta Ads recipe below) |
 | Find local businesses and places | `/v1/scrape/google/places` | Narrow by location and category; set `maxItems: 1` when looking up one specific business (much faster and cheaper) |
 
@@ -35,6 +35,7 @@ Use this reference to collect structured public data for research, monitoring, l
 - Website and PDF extraction requires public URLs. PDFs must have a readable text layer; image-only scans are not OCRed.
 - Bound large pages, documents, and transcripts with `maxChars` or `maxPages`. A `truncated: true` result reached that cap.
 - Continue pagination by returning `nextPageToken` unchanged as `pageToken` with the same filters. GitHub profile repository pagination additionally requires `includeRepos: true` and one username.
+- Threads posts: send one URL or up to 10 URLs to `/v1/scrape/threads/posts`. Read `missingUrls` on the final response. A backup scraper retries only missing exact posts; the endpoint does not accept `maxItems`.
 
 ### Meta Ads Library research recipe (`/v1/scrape/facebook/ads`)
 

@@ -5,7 +5,7 @@ description: Distribute a skill across the 4 agent skill folders (Codex, Claude 
 
 # Distribute a Skill Across All Agents
 
-The user has 4 agent skill locations on their MacBook. A skill must exist in each (or via symlink) to be discoverable by every agent.
+The user has 4 agent skill locations on their machine. A skill must exist in each (or via symlink) to be discoverable by every agent.
 
 ## The 4 Canonical Locations
 
@@ -20,31 +20,31 @@ The user has 4 agent skill locations on their MacBook. A skill must exist in eac
 
 1. **Author the skill in `~/.agents/skills/<skill-name>/SKILL.md`** (canonical). Follow `effective-agent-skills` SKILL.md guidance.
 2. **Verify the `.claude` symlink is intact** (one-time check):
-   bash
+   ```bash
    ls -la ~/.claude/skills
    # Expect: ~/.claude/skills -> ~/.agents/skills
-   
+   ```
    If it's a real directory instead of a symlink, the user has diverged copies — ask before touching.
 3. **Copy to `.hermes` only** (`.claude` and `.pi` are symlinks — already covered):
-   bash
+   ```bash
    SKILL=<skill-name>
    cp -r ~/.agents/skills/$SKILL ~/.hermes/skills/
-   
+   ```
 4. **Verify all 4 locations** show identical byte counts:
-   bash
+   ```bash
    for p in ~/.agents/skills/$SKILL ~/.claude/skills/$SKILL ~/.pi/agent/skills/$SKILL ~/.hermes/skills/$SKILL; do
      echo "$p: $(wc -c < $p/SKILL.md) bytes"
    done
-   
+   ```
    All four numbers must match. If `.claude` or `.pi` shows a different byte count, that symlink is broken — investigate before proceeding.
 
 ## Updating an Existing Distributed Skill
 
 Same flow — re-copy from `~/.agents/skills/` to `.hermes/skills/`. The `.claude` and `.pi` symlinks update automatically. `cp -r` overwrites by default; use `rsync -a --delete` if the skill folder has nested files that may have been removed:
 
-bash
+```bash
 rsync -a --delete ~/.agents/skills/$SKILL/ ~/.hermes/skills/$SKILL/
-
+```
 
 ## Pitfalls
 

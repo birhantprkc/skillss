@@ -13,11 +13,11 @@ We use DeepAPI (deepapi.co) for all deep research. This fully replaced the retir
 - Read `DEEPAPI_API_KEY` from the environment; setup writes it to `~/.deepapi/env`.
 - **Gotcha:** do NOT `source ~/.zshrc` — it breaks the shell (exit 126). Use the env var if set, else load the platform file:
 
-bash
+```bash
 [ -n "$DEEPAPI_API_KEY" ] || . ~/.deepapi/env
 KEY=$DEEPAPI_API_KEY
 BASE=${DEEPAPI_API_BASE_URL:-https://deepapi.co}
-
+```
 
 - Key missing → stop and ask the user. Never print or log the key.
 
@@ -36,7 +36,7 @@ Field limits: `query` ≤ 4000 chars (the paragraph goes here), optional `contex
 
 One call = one cited answer (targets 700-1,120 words; the server allows up to ~5 minutes, most runs finish much faster).
 
-bash
+```bash
 IDK=$(uuidgen)   # keep this; retries must reuse the SAME Idempotency-Key
 jq -n --rawfile p /tmp/dr_prompt.txt '{query:$p, maxCostUsd:"0.70"}' > /tmp/dr_body.json
 curl -s --max-time 320 "$BASE/v1/research/deep" \
@@ -44,18 +44,18 @@ curl -s --max-time 320 "$BASE/v1/research/deep" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $IDK" \
   -d @/tmp/dr_body.json > /tmp/dr_result.json
-
+```
 
 The API minimum is `maxCostUsd: "0.35"` per call. Use the recommended
 `maxCostUsd: "0.70"` by default; raise it above $0.70 only if the user approves.
 
 ## Step 3 — Read the report + sources
 
-bash
+```bash
 jq -r '.status'                    /tmp/dr_result.json   # succeeded | failed
 jq -r '.output.answer'             /tmp/dr_result.json   # the report
 jq -r '.output.sources[]?.url'     /tmp/dr_result.json   # source URLs
-
+```
 
 Save the report to a markdown file for the user and list citation URLs beneath it. Don't report research costs unless the user asks.
 

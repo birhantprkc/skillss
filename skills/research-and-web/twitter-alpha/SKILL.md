@@ -1,6 +1,6 @@
 ---
 name: twitter-alpha
-description: 'Pull high-alpha ideas from a company or person''s Twitter circle. Use when David says twitter-alpha, alpha from twitter, scrape their tweets, what is this founder posting, or wants patterns from a company circle on X. Differentiator vs deep-research: tweet-level signal from a 7-person circle, not a company brief.'
+description: 'Pull high-alpha ideas from a company or person''s Twitter circle. Use when the user says twitter-alpha, alpha from twitter, scrape their tweets, what is this founder posting, or wants patterns from a company circle on X. Differentiator vs deep-research: tweet-level signal from a 7-person circle, not a company brief.'
 ---
 
 # twitter-alpha
@@ -74,6 +74,6 @@ Rules:
 - Link the source post (or LinkedIn post).
 - Put view counts in parentheses when X reports them. Omit if unknown (LinkedIn).
 - One sentence under each title. No second paragraph.
-- Do not paste tweet dumps, bios, or a recap of who the 7 people are unless David asks.
+- Do not paste tweet dumps, bios, or a recap of who the 7 people are unless the user asks.
 
 If nothing is high-alpha, say that in two sentences. Do not pad the list.

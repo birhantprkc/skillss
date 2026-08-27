@@ -9,13 +9,14 @@ Run both code reviews, merge the findings, and give the user one shortlist of re
 
 ## Workflow
 
-1. **Launch both reviewers in parallel**, in one message with two Task tool calls:
-   - One `fable-review` subagent (Fable 5 Max 1M).
-   - One `gpt-review` subagent (GPT 5.6 Sol Max).
+1. **Launch both reviewers in parallel** as two bb threads (default). Follow `/bb-subagents`, `/bb-cli`, and each reviewer skill:
+   - One `fable-review` worker (Fable 5 Max 1M).
+   - One `gpt-review` worker (GPT 5.6 Sol Max).
    - Follow each skill's own instructions exactly: neutral, unbiased prompt; tell it what to review broadly; ask for a detailed report on critical/serious issues; concise plain-English final report.
-   - Run both in the background so they work at the same time.
+   - Reuse this thread's environment so both see the same files. Spawn both, then let them work.
+   - If the user names another harness (Cursor Task, cmux, Codex CLI, etc.), use that for both instead.
 
-2. **Wait for both to finish.** Do not start triage until both reports are back.
+2. **Wait for both to finish** (`bb thread wait` on each, unless another harness was requested). Do not start triage until both reports are back.
 
 3. **Merge and triage.** Read both reports in full. Then:
    - Combine all findings into one list.

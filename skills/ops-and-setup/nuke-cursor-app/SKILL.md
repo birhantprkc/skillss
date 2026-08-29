@@ -1,6 +1,6 @@
 ---
 name: nuke-cursor-app
-description: 'End-to-end Cursor IDE restart on David''s MacBook: snapshot metrics, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when the user explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
+description: 'End-to-end Cursor IDE restart on the user''s MacBook: snapshot metrics, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when the user explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
 disable-model-invocation: true
 ---
 
@@ -29,7 +29,7 @@ that all live under the `/Applications/Cursor.app` bundle path.
   system text-input service, not part of the Cursor app.
 - Warn the user first if you have reason to think an important agent run is
   in flight; killing Cursor kills its local agent sessions.
-- The macbook-metrics collector OWNS `cursor-metrics.sqlite3`. Read it
+- The metrics collector OWNS `cursor-metrics.sqlite3`. Read it
   ONLY with `sqlite3 -readonly`. Never write to it.
 - The snapshot is best-effort: if the DB is missing or a query fails,
   note that in the log and continue — never block the nuke on it.
@@ -39,8 +39,8 @@ that all live under the `/Applications/Cursor.app` bundle path.
 ### 1. Snapshot BEFORE killing
 
 ```bash
-DB="$HOME/Library/Application Support/macbook-metrics/cursor-metrics.sqlite3"
-LOG_DIR="$HOME/Library/Application Support/macbook-metrics/nuke-logs"
+DB="$HOME/Library/Application Support/<metrics-collector>/cursor-metrics.sqlite3"
+LOG_DIR="$HOME/Library/Application Support/<metrics-collector>/nuke-logs"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/$(date +%Y-%m-%d-%H%M).md"
 

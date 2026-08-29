@@ -1,6 +1,6 @@
 ---
 name: fireflies-transcript
-description: 'Pull raw meeting transcripts from the user''s Fireflies.ai notetaker via its GraphQL API, using the key saved globally on this MacBook. Use when the user wants a call transcript, meeting notes, "what was said on the call", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.'
+description: 'Pull raw meeting transcripts from the user''s Fireflies.ai notetaker via its GraphQL API, using a locally stored API key. Use when the user wants a call transcript, meeting notes, "what was said on the call", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.'
 ---
 
 # Fireflies Transcript
@@ -9,22 +9,22 @@ Fetch any meeting transcript from Fireflies.ai as raw text via GraphQL. Read-onl
 
 ## Auth (state-check first)
 
-The API key lives in a local env file (mode 600, never commit or print it):
+The API key is stored locally in an environment file or secret manager (never commit or print it):
 
 ```bash
-source <path-to-fireflies-env-file>   # exports the API key variable
-[ -n "$API_KEY" ] || echo "MISSING KEY - stop and tell the user"
+source /path/to/your/fireflies-env-file   # exports FIREFLIES_API_KEY
+[ -n "$FIREFLIES_API_KEY" ] || echo "MISSING KEY - stop and tell the user"
 ```
 
 Every call is a POST to `https://api.fireflies.ai/graphql` with
-`Authorization: Bearer $API_KEY` and a JSON body `{"query": "..."}`.
+`Authorization: Bearer $FIREFLIES_API_KEY` and a JSON body `{"query": "..."}`.
 
 ## Step 1 - find the meeting id
 
 ```bash
 curl -sS -X POST https://api.fireflies.ai/graphql \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $API_KEY" \
+  -H "Authorization: Bearer $FIREFLIES_API_KEY" \
   -d '{"query":"{ transcripts(limit: 25) { id title date duration } }"}' \
   | jq -r '.data.transcripts[] | "\(.id) | \(.title) | \(.date)"'
 ```
@@ -42,7 +42,7 @@ curl -sS -X POST https://api.fireflies.ai/graphql \
 QUERY='{ transcript(id: "MEETING_ID") { title sentences { speaker_name text } } }'
 curl -sS -X POST https://api.fireflies.ai/graphql \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $API_KEY" \
+  -H "Authorization: Bearer $FIREFLIES_API_KEY" \
   -d "$(jq -nc --arg query "$QUERY" '{query: $query}')" \
   > /tmp/ff.json
 
@@ -63,7 +63,7 @@ Optional extras on the same `transcript(id:)` query: `summary { overview short_s
 - `sentences: null` — recording still processing or no audio captured; nothing to pull.
 - `errors[]` in the response instead of `data` — usually a bad field name; fix the query.
 - 401/invalid key — key was rotated; ask the user for a new one (Fireflies dashboard:
-  Settings -> Developer settings), update the env file.
+  Settings -> Developer settings), update your local env file.
 
 ## Verify before reporting done
 

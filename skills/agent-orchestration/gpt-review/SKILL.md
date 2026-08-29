@@ -17,6 +17,6 @@ Tell him what to review, but don't be overly specific — let him find his own b
 
 And when the subagent finishes, show the user his exact response in full. Do not rewrite it. Do not update it.
 
-Again, the goal here is to write great software. It's to build amazing software, and in order to do that you need to let the subagent do its work: tell it what to review in a broad way, be as unbiased as possible, don't influence it in any way, and tell it to output a detailed report — telling the user whether the code is good and safe to be merged into production, or whether there are any serious or critical issues with it, and if so, how to fix them.
+Again, the goal here is to write great software. It's to build amazing software, and in order to do that you need to let the subagent do its work: tell it what to review in a broad way, be as unbiased as possible, don't influence it in any way, and tell it to output a detailed report — telling us whether the code is good and safe to be merged into production, or whether there are any serious or critical issues with it, and if so, how to fix them.
 
 Also tell him to make the final report concise, written in plain English.

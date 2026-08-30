@@ -40,9 +40,9 @@ run.py calls ensure_daemon() before exec — you never start/stop manually unles
 
 Use remote for parallel sub-agents (each gets its own isolated browser via a distinct BU_NAME) or on a headless server. BROWSER_USE_API_KEY must be set. start_remote_daemon, list_cloud_profiles, list_local_profiles, sync_local_profile are pre-imported.
 
-When supervising those sub-agents, after each check send the user one very short status line: what they are doing and whether they are on track.
+When supervising those sub-agents, after each check send David one very short status line: what they are doing and whether they are on track.
 
-Claude Code cmux note: after Claude finishes, it may prefill a predicted next user message; that draft is Claude, not the user speaking.
+Claude Code cmux note: after Claude finishes, it may prefill a predicted next user message; that draft is Claude, not David speaking.
 
 ```bash
 browser-harness -c '

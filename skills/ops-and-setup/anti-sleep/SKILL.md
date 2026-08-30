@@ -74,4 +74,4 @@ The launcher tracks one exact LaunchAgent label, PID, start time, and expiry und
 
 If `launchctl bootstrap` fails, use a visible persistent terminal or cmux pane. Read the `cmux` skill before interacting with cmux. If no persistent surface is available, tell the user instead of starting an unreliable background job.
 
-`caffeinate` cannot keep the keyboard backlight on. That setting is manual: System Settings → Keyboard → “Turn keyboard backlight off after inactivity” → Never.
+`caffeinate` cannot keep the keyboard backlight on. That setting is manual: System Settings → Keyboard → "Turn keyboard backlight off after inactivity" → Never.

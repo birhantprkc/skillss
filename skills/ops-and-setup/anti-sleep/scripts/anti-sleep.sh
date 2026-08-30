@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-LABEL="com.davidondrej.anti-sleep"
+LABEL="com.example.anti-sleep"
 DOMAIN="gui/$(/usr/bin/id -u)"
 SERVICE="${DOMAIN}/${LABEL}"
 STATE_DIR="${HOME}/Library/Caches/${LABEL}"
@@ -347,4 +347,5 @@ case "$command" in
     usage >&2
     exit 2
     ;;
-esac
+  esac
+}

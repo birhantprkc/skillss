@@ -40,9 +40,9 @@ run.py calls ensure_daemon() before exec — you never start/stop manually unles
 
 Use remote for parallel sub-agents (each gets its own isolated browser via a distinct BU_NAME) or on a headless server. BROWSER_USE_API_KEY must be set. start_remote_daemon, list_cloud_profiles, list_local_profiles, sync_local_profile are pre-imported.
 
-When supervising those sub-agents, after each check send David one very short status line: what they are doing and whether they are on track.
+When supervising those sub-agents, after each check send the user one very short status line: what they are doing and whether they are on track.
 
-Claude Code cmux note: after Claude finishes, it may prefill a predicted next user message; that draft is Claude, not David speaking.
+Claude Code cmux note: after Claude finishes, it may prefill a predicted next user message; that draft is Claude, not the user speaking.
 
 ```bash
 browser-harness -c '
@@ -140,40 +140,6 @@ print("Written", len(text), "chars")
 - Use `time.sleep()` generously for JS-heavy SPAs (X, LinkedIn need 3-5s)
 - X/Twitter articles render inline — just scroll/extract via DOM, no extra click needed
 - For very long pages, `js(...)` with `innerText` grabs everything including below-fold content
-
-## Hermes Agent integration
-
-Installed at `~/Developer/browser-harness` as editable `uv tool install -e .`. Binary at `~/.local/bin/browser-harness`. Skill at `~/.hermes/skills/browser-harness/`.
-
-**Frontmatter pitfall:** The upstream SKILL.md ships with `name: browser` in frontmatter, which collides with Hermes's built-in `browser` toolset. When copying into `~/.hermes/skills/`, rename to `name: browser-harness` in the frontmatter.
-
-**Brave Browser:** Works identically to Chrome. Enable remote debugging at `brave://inspect/#remote-debugging` (same checkbox). The harness auto-discovers Brave's profile directory.
-
-## Authenticated content extraction (proven pattern)
-
-browser-harness connects to the user's real browser with active sessions — ideal for login-walled sites where `web_extract` or Hermes's built-in `browser_navigate` fail (X/Twitter articles, LinkedIn, paywalled sites).
-
-```bash
-browser-harness -c '
-new_tab("https://x.com/user/status/123456")
-wait_for_load()
-import time
-time.sleep(5)  # let JS-heavy pages render
-text = js("""
-    const article = document.querySelector("article");
-    if (article) return article.innerText;
-    return document.body.innerText;
-""")
-with open("/tmp/extracted.txt", "w") as f:
-    f.write(text)
-print("Written", len(text), "chars")
-'
-```
-
-- Write to a temp file to avoid shell escaping issues with large text
-- Use `time.sleep()` generously for JS-heavy SPAs (X, LinkedIn need 3-5s)
-- X/Twitter articles render inline — just scroll/extract via DOM, no extra click needed
-- `js(...)` with `innerText` grabs everything including below-fold content
 
 ## Gotchas (field-tested)
 

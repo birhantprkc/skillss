@@ -45,7 +45,7 @@ herdr pane read <pane-id> --source recent-unwrapped --lines 120
 
 Stay inside the current workspace. Read before messaging; for inspection-only requests, send nothing. After messaging, wait for `done`, `idle`, or `blocked`, then read the output again. Never assume the prompt was acted on.
 
-Do not close, rename, move, resize, or reconfigure panes you did not create. Do not create or close panes unless the user explicitly asks. "Use the Herdr skill" means execute these CLI operations, not merely explain them.
+Do not close, rename, move, resize, or reconfigure panes you did not create. Do not create or close panes unless the user explicitly asks. “Use the Herdr skill” means execute these CLI operations, not merely explain them.
 
 ## Sharp edges (empirically verified)
 
@@ -102,7 +102,7 @@ ALWAYS launch agents with auto-approval — a worker in an unattended pane stall
 - Codex CLI: `codex --yolo "task"`
 - Claude Code: `claude --dangerously-skip-permissions "task"`
 
-This is safe only because the user's `global-agent-guardrails` deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
+This is safe only because a global agent guardrails deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
 
 NEVER verify a launch with `sleep N && pane read` — that is a non-herdr antipattern. Use the native waits: `herdr agent wait <pane> --status working --timeout MS` (agent picked up the task) or `herdr wait output <pane> --match <text>`, then read the pane.
 
@@ -123,9 +123,9 @@ herdr pane run <pane-id> "cd <worktree> && cursor-agent --model gpt-5.3-codex-hi
 
 ## Prompt patterns
 
-- **Inspect:** "Use the Herdr skill. Inspect every agent in this workspace, read its recent output, and summarize its task and status. Do not send anything."
-- **Ask:** "Use Herdr to find the testing agent, read its context, ask whether the test suite passes, wait for its response, and report back."
-- **Coordinate:** "Act as lead agent. Inspect all agents, share missing context, prevent duplicate work, wait for results, and give me one combined summary."
+- **Inspect:** “Use the Herdr skill. Inspect every agent in this workspace, read its recent output, and summarize its task and status. Do not send anything.”
+- **Ask:** “Use Herdr to find the testing agent, read its context, ask whether the test suite passes, wait for its response, and report back.”
+- **Coordinate:** “Act as lead agent. Inspect all agents, share missing context, prevent duplicate work, wait for results, and give me one combined summary.”
 
 ## Direct shortcuts
 

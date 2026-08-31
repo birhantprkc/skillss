@@ -1,6 +1,6 @@
 ---
 name: nuke-cursor-app
-description: 'End-to-end Cursor IDE restart on the user''s MacBook: snapshot metrics, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when the user explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
+description: 'End-to-end Cursor IDE restart on the user''s MacBook: snapshot process memory, kill ALL Cursor processes, relaunch Cursor, report before/after memory. Recovers from the known renderer memory leak that makes Cursor lag. Manual-only — run ONLY when the user explicitly invokes it (/nuke-cursor-app, "nuke cursor"). Differentiator: kills the Cursor desktop app; cursor-cli sessions are unrelated.'
 disable-model-invocation: true
 ---
 
@@ -29,18 +29,15 @@ that all live under the `/Applications/Cursor.app` bundle path.
   system text-input service, not part of the Cursor app.
 - Warn the user first if you have reason to think an important agent run is
   in flight; killing Cursor kills its local agent sessions.
-- The macbook-metrics collector OWNS `cursor-metrics.sqlite3`. Read it
-  ONLY with `sqlite3 -readonly`. Never write to it.
-- The snapshot is best-effort: if the DB is missing or a query fails,
-  note that in the log and continue — never block the nuke on it.
+- The snapshot is best-effort: if a command fails, note that in the log and
+  continue — never block the nuke on it.
 
 ## Procedure
 
 ### 1. Snapshot BEFORE killing
 
 ```bash
-DB="$HOME/Library/Application Support/macbook-metrics/cursor-metrics.sqlite3"
-LOG_DIR="$HOME/Library/Application Support/macbook-metrics/nuke-logs"
+LOG_DIR="$HOME/Library/Application Support/cursor-nuke-logs"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/$(date +%Y-%m-%d-%H%M).md"
 
@@ -49,15 +46,11 @@ ps -axo pid,rss,comm | grep "/Applications/Cursor.app" | grep -v grep
 
 # Totals for the summary line (rss is in KB on macOS)
 ps -axo rss,comm | awk 'index($0, "/Applications/Cursor.app") {n++; s+=$1} END {printf "%d processes, %.1f GB", n, s/1048576; print ""}'
-
-# Last 30 min from the collector (read-only)
-sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), role, process_count, ROUND(cpu_percent,1), ROUND(resident_bytes/1073741824.0,2) || ' GB' FROM raw_samples WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
-sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), kind, role, reason, memory_pressure FROM events WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
 ```
 
-Write all four outputs into `$LOG` with headings: process list, totals,
-metrics (last 30 min), events (last 30 min). The after-restart reading is
-appended in step 4 — so one file tells the whole story of this nuke.
+Write both outputs into `$LOG` with headings: process list, totals. The
+after-restart reading is appended in step 4 — so one file tells the whole
+story of this nuke.
 
 ### 2. Kill every Cursor process
 
@@ -118,7 +111,7 @@ Append both outputs to `$LOG` under an "after restart" heading.
 End with one plain-English summary line, for example:
 
 > Killed 14 processes using 21.3 GB. Cursor is back with 9 processes
-> using 2.1 GB. Snapshot saved to nuke-logs/2026-08-14-1832.md.
+> using 2.1 GB. Snapshot saved to cursor-nuke-logs/2026-08-14-1832.md.
 
 Never claim success without the step 2 final check and (unless skipped)
 the step 3 relaunch check.
@@ -127,5 +120,3 @@ the step 3 relaunch check.
 
 - After a force-kill, Cursor may show a "restore windows?" dialog on
   relaunch. That is expected — tell the user to click Restore.
-- If the metrics DB has no recent rows (collector stalled), say so in the
-  log and the report; the `ps` readouts still give valid before/after.

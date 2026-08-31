@@ -46,7 +46,7 @@ Self-reported numbers stay labeled as their claims.
 
 Short. Plain English. Nice readable markdown. No tables. No tweet dumps. No research narration.
 
-```markdown
+markdown
 **Full name** — [@handle](https://x.com/handle)
 
 - LinkedIn: [url]
@@ -64,7 +64,7 @@ The real resume. Dates and companies. Label unverified numbers.
 
 **Archetype**
 One brutally honest line. Who they actually are. Builder and marketer are examples, not a forced choice. Say why.
-```
+
 
 Omit a missing profile instead of faking it.
 

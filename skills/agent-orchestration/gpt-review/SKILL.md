@@ -1,6 +1,6 @@
 ---
 name: gpt-review
-description: 'Launch a GPT 5.6 Sol Max reviewer as a bb thread (default: /bb-subagents) to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says "/gpt-review", "gpt review", or asks for GPT to review the code. Differentiator: reviewer model is GPT 5.6 Sol Max — for a Fable reviewer use fable-review.'
+description: 'Launch a GPT 5.6 Sol Max reviewer as a bb thread (default: /bb-subagents) to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when David says "/gpt-review", "gpt review", or asks for GPT to review the code. Differentiator: reviewer model is GPT 5.6 Sol Max — for a Fable reviewer use fable-review.'
 ---
 
 # GPT Review
@@ -9,7 +9,7 @@ Launch a GPT 5.6 Sol Max reviewer to review everything fully and carefully, as i
 
 **Default harness is bb.** Read `/bb-subagents` and `/bb-cli` first. Spawn a bb thread with Codex **GPT 5.6 Sol Max** (use the Codex mapping in `/bb-subagents`). Reuse this thread's environment so the reviewer sees the same files. Use `--parent-self` when this thread is coordinating the review. Then `bb thread wait` and show the exact `bb thread output`.
 
-If the user names another harness (Cursor Task, cmux, Codex CLI, etc.), use that instead.
+If David names another harness (Cursor Task, cmux, Codex CLI, etc.), use that instead.
 
 Give it the necessary context, but make sure to stay neutral and unbiased. Do not nudge it towards any one specific solution. The goal here is to do great work. So be as objective and neutral as possible in writing the prompt for the subagent.
 

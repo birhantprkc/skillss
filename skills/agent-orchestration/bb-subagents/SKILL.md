@@ -1,22 +1,22 @@
 ---
 name: bb-subagents
-description: 'Launch a new bb worker thread with an explicit project, provider, model, reasoning effort, fast/default tier, worktree, and prompt. Use when David says "launch a bb session", "bb subagent", "spawn a bb thread", "new worktree agent", or asks to run Grok/Codex/Cursor CLI in bb on a repo. Differentiator vs bb-cli: this is only the spawn recipe. Differentiator vs codex-subagent/launch-subagent: those are Codex CLI and Cursor Task tool, not bb threads.'
+description: 'Launch a new bb worker thread with an explicit project, provider, model, reasoning effort, fast/default tier, worktree, and prompt. Use when the user says "launch a bb session", "bb subagent", "spawn a bb thread", "new worktree agent", or asks to run Grok/Codex/Cursor CLI in bb on a repo. Differentiator vs bb-cli: this is only the spawn recipe. Differentiator vs codex-subagent/launch-subagent: those are Codex CLI and Cursor Task tool, not bb threads.'
 ---
 
 # bb-subagents
 
-Spawn a bb thread the way David launches them. Read this before any `bb thread spawn`.
+Spawn a bb thread the way the user launches them. Read this before any `bb thread spawn`.
 
 Use `bb-cli` for status, tell, wait, inspect, automations. This skill is spawn-only.
 
-**Default worker:** Codex `gpt-5.6-sol`, `--reasoning-level high`, `--service-tier fast` ("GPT 5.6 Sol High Fast"); bump to `xhigh` for larger refactors. Use this unless David requests otherwise.
+**Default worker:** Codex `gpt-5.6-sol`, `--reasoning-level high`, `--service-tier fast` ("GPT 5.6 Sol High Fast"); bump to `xhigh` for larger refactors. Use this unless the user requests otherwise.
 
 ## Hard rules
 
 - Pass `--project` explicitly. The CLI does not infer it from the current thread.
 - Never guess provider or model IDs. Lookup, then spawn.
-- After spawn: do **not** `bb thread open`, `--split`, or focus the new thread unless David asks. Just launch. Report the thread id. Stop.
-- Do **not** poll, `bb thread wait`, or read logs unless David asks.
+- After spawn: do **not** `bb thread open`, `--split`, or focus the new thread unless the user asks. Just launch. Report the thread id. Stop.
+- Do **not** poll, `bb thread wait`, or read logs unless the user asks.
 - Prefer bare `bb`. If `BB_CLI` is set, `"$BB_CLI"` is fine.
 
 ## Recipe
@@ -37,7 +37,7 @@ bb thread spawn --json \
   --prompt "..."
 ```
 
-Add `--service-tier fast` only when David says **fast**.
+Add `--service-tier fast` only when the user says **fast**.
 
 ## Parent / sidebar nest
 
@@ -49,7 +49,7 @@ Add `--service-tier fast` only when David says **fast**.
 
 Omit both for a **root** thread — its own top-level sidebar row, not nested.
 
-When it makes sense: this thread is coordinating the work, David asked for a worker under this session, or the job is a clear subtask of this thread. Skip it for unrelated one-off work that should sit as its own top-level thread.
+When it makes sense: this thread is coordinating the work, the user asked for a worker under this session, or the job is a clear subtask of this thread. Skip it for unrelated one-off work that should sit as its own top-level thread.
 
 ```bash
 # add when it makes sense — not required
@@ -60,11 +60,11 @@ When it makes sense: this thread is coordinating the work, David asked for a wor
 
 ## Lookup
 
-**Project.** Match `name` (e.g. `DeepAPI`) in `bb project list --json`. Use that `id`. Confirm `sources[].path` is the repo David named. Do not hardcode project IDs.
+**Project.** Match `name` (e.g. `DeepAPI`) in `bb project list --json`. Use that `id`. Confirm `sources[].path` is the repo the user named. Do not hardcode project IDs.
 
 **Provider.** From `bb provider list --json`:
 
-| David says | Provider id |
+| User says | Provider id |
 |---|---|
 | Cursor CLI / Cursor subscription | `acp-cursor` |
 | Codex / Codex subscription / ChatGPT sub | `codex` |
@@ -72,15 +72,15 @@ When it makes sense: this thread is coordinating the work, David asked for a wor
 
 Do not use `acp-grok` for "Grok via Cursor CLI". That is Grok Build, a different product.
 
-**Model + reasoning.** From `bb provider models <id> --json`. Use the catalog `id`. Match David's words to `displayName` **and** `supportedReasoningEfforts[].description`. Those two are not the same field.
+**Model + reasoning.** From `bb provider models <id> --json`. Use the catalog `id`. Match the user's words to `displayName` **and** `supportedReasoningEfforts[].description`. Those two are not the same field.
 
-If David does not name a reasoning level, use that model's `defaultReasoningEffort` from the catalog. Do not pick extra high or max on your own. Example: Claude Code Fable 5 defaults to `high`.
+If the user does not name a reasoning level, use that model's `defaultReasoningEffort` from the catalog. Do not pick extra high or max on your own. Example: Claude Code Fable 5 defaults to `high`.
 
 ## Known mappings (re-fetch if spawn rejects them)
 
 ### Cursor CLI — Grok 4.6 Extra High Fast
 
-David: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
+User: "Grok 4.6 extra high fast (via Cursor CLI subscription)"
 
 ```bash
 --provider acp-cursor \
@@ -99,7 +99,7 @@ Traps:
 
 ### Codex — GPT 5.6 Sol Max
 
-David: "GPT 5.6 Sol Max, via the Codex subscription"
+User: "GPT 5.6 Sol Max, via the Codex subscription"
 
 ```bash
 --provider codex \
@@ -112,11 +112,11 @@ Traps:
 - Use native `gpt-5.6-sol`, not `cursor/gpt-5.6-sol` (opencodex routed through Cursor).
 - Max is `--reasoning-level max`, not a model id suffix.
 - Codex supports `auto` permission mode. Still use `full` when the worker must hit prod, network, or leave the sandbox.
-- Pass `--service-tier fast` only if David asks for fast on Codex too.
+- Pass `--service-tier fast` only if the user asks for fast on Codex too.
 
 ## Worktree
 
-`--new-environment worktree` is the bb-managed worktree. Do not create a git worktree by hand unless David says so.
+`--new-environment worktree` is the bb-managed worktree. Do not create a git worktree by hand unless the user says so.
 
 - New worktrees get **tracked files only**.
 - Untracked files (`.env`) copy only if the repo has `.worktreeinclude`.
@@ -158,15 +158,15 @@ Always pass `--json` and `--title`.
 
 | Mode | Meaning |
 |---|---|
-| `accept-edits` | Sandbox on. David approves escalations. |
+| `accept-edits` | Sandbox on. The user approves escalations. |
 | `auto` | Sandbox on. Provider auto-approves. Codex/Claude have this. Cursor ACP does not. |
 | `full` | No sandbox. Needed for prod DB, many network tools, and "just go". |
 
-Default for David's investigation/build workers: `full`, with the prompt forbidding writes when the job is read-only.
+Default for the user's investigation/build workers: `full`, with the prompt forbidding writes when the job is read-only.
 
 ## After spawn
 
-Tell David, then stop:
+Tell the user, then stop:
 
 - thread id
 - title
@@ -177,7 +177,7 @@ Tell David, then stop:
 
 Do not dump the prompt. Do not open the thread. Do not wait for it.
 
-## Archive (only when David asks)
+## Archive (only when the user asks)
 
 Do not auto-archive after spawn.
 
@@ -193,7 +193,6 @@ bb thread unarchive <id> --json
 bb thread list --archived
 ```
 
-Do not use `bb thread delete` unless David wants it gone forever. Do not use `--visibility hidden` as a substitute for archive. Hidden is sidebar-only; archive is the lifecycle close-out.
+Do not use `bb thread delete` unless the user wants it gone forever. Do not use `--visibility hidden` as a substitute for archive. Hidden is sidebar-only; archive is the lifecycle close-out.
 
 Bulk, one worktree/environment: `bb environment archive-threads <environment-id>`.
-

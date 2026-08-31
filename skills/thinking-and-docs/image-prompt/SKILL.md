@@ -9,7 +9,13 @@ Turn the request into 4 prompt variations. David pastes them into whatever image
 
 ## Output format
 
-- Exactly 4 variations. Each is ONE paragraph inside its own code block. Nothing else inside the code block.
+- Exactly 4 variations. Each is ONE paragraph inside its own fenced code block. Nothing else inside the code block.
+- Always use a `text` fence so it renders as a full copyable block, not a tiny snippet. Pattern:
+  1. Blank line after the label
+  2. Opening fence on its own line: three backticks then `text`
+  3. The prompt paragraph
+  4. Closing fence on its own line
+- Never wrap a prompt in single backticks. Never use a bare unlabeled fence. Those render as small snippets and are hard to copy.
 - Every prompt ends with ` --ar 1:1`. It is the Midjourney aspect-ratio flag and is harmless in other models. If David names an aspect ratio, use that instead (e.g. `--ar 16:9`).
 - A 3-5 word label above each block is fine. No commentary, no explanations, no questions after.
 
@@ -36,7 +42,8 @@ Write like a great expressive artist describing a finished piece. Concise, clear
 Request: "logo concept for Vectal Labs, something about invention"
 
 **Filament in the void**
-```
+
+```text
 A single glowing filament bulb suspended in a vast dark void, its wire coiled into a rising spiral, casting warm amber light onto faint blueprint lines etched into black glass beneath it. Deep charcoal and midnight blue with one accent of molten gold. Quiet and reverent, the feeling of a first idea arriving at 3 a.m. Minimal, high contrast, rendered like a luxury product photograph. --ar 1:1
 ```
 

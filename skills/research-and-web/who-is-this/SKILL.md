@@ -31,41 +31,46 @@ Follow DeepAPI polling. If a platform is missing or private, say so. Do not inve
 
 ## What to extract
 
-From the scrape, keep only:
+Scrape wide, report narrow. From everything you pulled, keep only the 3 facts that explain who this person is. Drop the rest — a full CV is a failure, not thoroughness.
 
-- Real track record (jobs, products, exits, code, talks)
-- Claims vs evidence (especially self-reported revenue)
-- What they actually post about
-- The honest archetype: who they are in practice, not their bio. Builder and marketer are examples, not the only options. Name the real type (operator, researcher, grifter, investor, recruiter, hobbyist, etc.) when that is more true.
+Rules:
 
-Ignore congrats, logo spam, paid "king of X" press, and unverified follower-count flexing.
+- Real track record beats bio. Jobs, products, exits, code, talks.
+- Self-reported numbers stay labeled "their claim". Verified numbers say "verified".
+- Note what they actually post about only if it changes the verdict.
+- Name the honest archetype: builder, marketer, operator, researcher, grifter, investor, recruiter, hobbyist, etc. Pick the one that is true in practice, not the one in their bio.
 
-Self-reported numbers stay labeled as their claims.
+Ignore congrats, logo spam, paid "king of X" press, and follower-count flexing.
 
 ## Output
 
-Short. Plain English. Nice readable markdown. No tables. No tweet dumps. No research narration.
+Hard cap: 100 words after the header line. Plain English. Short sentences. No tables. No sub-bullets. No tweet dumps. No research narration. No "I found" / "I scraped".
 
-markdown
-**Full name** — [@handle](https://x.com/handle)
+```markdown
+**Full name** — [@handle](https://x.com/handle) · [LinkedIn](url) · [GitHub](url) · [Site](url)
 
-- LinkedIn: [url]
-- GitHub: [url]
-- Site: [url]
+**Who:** One sentence. Where they are and what they do now.
 
-**Who they are**
-Two or three short sentences.
+**Track record:** Max 3 bullets. Only what explains who they are. Dates. Label claims vs verified.
 
-**What they have done**
-The real resume. Dates and companies. Label unverified numbers.
+**Verdict:** One line. The archetype, whether the story holds, and why.
+```
 
-**What they are known for**
-3–4 bullets.
+Example of the right length (fictional):
 
-**Archetype**
-One brutally honest line. Who they actually are. Builder and marketer are examples, not a forced choice. Say why.
+```markdown
+**Jane Doe** — [@janedoe](https://x.com/janedoe) · [LinkedIn](https://linkedin.com/in/janedoe) · [GitHub](https://github.com/janedoe)
 
+**Who:** Berlin solo founder of Acme, an open-source Postgres proxy. Writes 90% of the commits herself.
 
-Omit a missing profile instead of faking it.
+**Track record:**
+- 2024–now: Founder, Acme. 2.1K stars (verified), no funding, no revenue (her own post).
+- 2019–2024: Backend engineer at Zalando and N26.
+- "50K users" is her claim; nothing backs it.
 
-If the user asks a follow-up, answer even shorter. Do not re-run the full scrape unless the first pass missed that platform.
+**Verdict:** Solo builder, not a company yet. Real code, honest numbers, one unproven user claim.
+```
+
+Omit a missing profile link instead of faking it.
+
+Follow-ups: answer in 1–3 sentences. Do not re-run the scrape unless the first pass missed that platform.

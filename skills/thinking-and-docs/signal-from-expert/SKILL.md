@@ -33,7 +33,7 @@ The user's message names three things. If one is missing, ask for it in one plai
 ls <repo>/essays/<expert-slug>/ 2>/dev/null   # reuse what is already saved
 ```
 
-Then find more with DeepAPI (load the `deepapi` skill; `source <deepapi-env-file>` if the key is not set). Run 5+ separate `POST /v1/search/web` calls with different phrasings of `<expert> <topic>` (essay, talk transcript, interview, "best essays on", specific sub-questions). Pick the 5–8 pieces most relevant to the topic. Merge with the user's URLs and anything already saved.
+Then find more with DeepAPI (load the `deepapi` skill; `source ~/.deepapi/env` if the key is not set). Run 5+ separate `POST /v1/search/web` calls with different phrasings of `<expert> <topic>` (essay, talk transcript, interview, "best essays on", specific sub-questions). Pick the 5–8 pieces most relevant to the topic. Merge with the user's URLs and anything already saved.
 
 Show the list (title + URL, one line each) and ask "go?". Do not scrape before the user answers.
 
@@ -92,7 +92,7 @@ Save to `<corpus folder>/signal-<expert-slug>.md` (if the corpus is one file, it
 
 ## Failure modes
 
-- **`Unknown field \"url\"`** — the scrape body uses `urls` (array). The script does this right.
+- **`Unknown field "url"`** — the scrape body uses `urls` (array). The script does this right.
 - **Python `IncompleteRead` on DeepAPI responses** — the sandbox proxy truncates chunked responses to urllib. The script uses curl for that reason; do the same for any ad-hoc calls.
 - **Page shows `truncated: true`** — re-run with a higher `--max-chars`.
 - **Search returns junk** — ask the user for URLs instead of guessing.

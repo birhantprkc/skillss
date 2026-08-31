@@ -52,9 +52,9 @@ Before writing the file, give the user a bullet list grouped by section — let 
 - **Heavy reference docs:** annotate with `**Read when:**` triggers (e.g. "Read when: writing offer copy"). Prevents loading every session.
 
 ### Step 6: Create the AGENTS.md symlink
-
+```
 cd <folder> && ln -s CLAUDE.md AGENTS.md
-
+```
 Verify with `ls -la CLAUDE.md AGENTS.md`.
 
 ### Step 7: Commit only when asked

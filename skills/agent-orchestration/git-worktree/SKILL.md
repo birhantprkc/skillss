@@ -49,7 +49,7 @@ In Cursor: start agents in worktrees via the Agents Window, or `/worktree <task>
 A fresh worktree contains ONLY tracked files. Everything gitignored is missing. An agent dropped into a bare worktree will fail confusingly, so replicate:
 
 1. **Env/secret files** — copy `.env`, `.env.local`, and similar from the primary checkout. Copy, never symlink (an agent editing a symlinked env file would corrupt the original).
-2. **Dependencies** — run the install (`npm ci`, `pnpm install`, `uv sync`, `bundle install`). Never symlink `node_modules`; it breaks builds in both checkouts.
+2. **Dependencies** — run the install (`npm ci`, `pnpm install`, `uv sync`, `bundle install`). Never symlink `node_modules` from the primary checkout to save time or disk: bundlers resolve it to a path outside the worktree and refuse to build. Next.js/Turbopack dies with `FATAL: Symlink [project]/node_modules is invalid, it points out of the filesystem root`. Delete the symlink (`rm -f node_modules`, since `rm` alone refuses) and run a real install.
 3. **Local databases and services** — decide per service:
    - Shared server (e.g. one Postgres container): pin the identity so worktrees don't spawn duplicates fighting over the same port. For Docker Compose, set a top-level `name:` in the compose file — otherwise the project name comes from the folder name and every worktree starts its own container on the same port.
    - Per-worktree state (e.g. SQLite files): copy or re-seed it.

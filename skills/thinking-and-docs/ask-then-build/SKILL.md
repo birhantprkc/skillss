@@ -12,6 +12,8 @@ Turn a feature idea into a build prompt for another agent, in two phases.
    boundaries, how it interacts with existing rules.
 2. Ask them ONE at a time. For each: the question, top options A-D, your
    preferred pick with a one-line reason. Then stop and wait.
+   Never number questions as "1 of N" unless you truly know N. If the count
+   is open, keep it open and keep asking until you have the context you need.
 3. When David answers, record the decision immediately — update the repo's
    docs (product requirements, ADR, or README) if the project has them.
 4. If David overrides an earlier documented decision, update the docs right

@@ -12,6 +12,24 @@ Turn a feature idea into a build prompt for another agent, in two phases.
    boundaries, how it interacts with existing rules.
 2. Ask them ONE at a time. For each: the question, top options A-D, your
    preferred pick with a one-line reason. Then stop and wait.
+   Use this exact layout. Put a blank line between EVERY block. Markdown
+   renderers (bb included) collapse single newlines into one paragraph, so
+   options written back-to-back render as one run-on blob.
+
+   **Question title?**
+
+   One line of context, if needed.
+
+   A. First option.
+
+   B. Second option.
+
+   C. Third option.
+
+   D. Fourth option.
+
+   My pick: A. One-line reason.
+
    Never number questions as "1 of N" unless you truly know N. If the count
    is open, keep it open and keep asking until you have the context you need.
 3. When David answers, record the decision immediately — update the repo's
@@ -34,5 +52,7 @@ agent. It must include, in this order:
 
 - Very concise, plain English, short sentences.
 - Never bundle questions. Never write the prompt before all answers are in.
+- Never put two options on one line. Always a blank line between A, B, C, D
+  and before "My pick".
 - Keep the prompt to a single paragraph — if it needs two, the scope is too
   big; say so.

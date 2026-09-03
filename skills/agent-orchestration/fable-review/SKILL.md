@@ -1,13 +1,13 @@
 ---
 name: fable-review
-description: 'Launch a Fable 5 Max 1M reviewer as a bb thread (default: /bb-subagents) to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says "/fable-review", "fable review", or asks for Fable to review the code. Differentiator: reviewer model is Fable 5 Max 1M — for a GPT reviewer use gpt-review.'
+description: 'Launch a Fable 5 Max 1M reviewer as a bb thread (default: /nagent) to do a deep, neutral senior-developer review of the current work and report its findings back verbatim. Use when the user says "/fable-review", "fable review", or asks for Fable to review the code. Differentiator: reviewer model is Fable 5 Max 1M — for a GPT reviewer use gpt-review.'
 ---
 
 # Fable Review
 
 Launch a Fable 5 Max 1M reviewer to review everything fully and carefully, as if it was a senior developer reviewing the work of a junior.
 
-**Default harness is bb.** Read `/bb-subagents` and `/bb-cli` first. Spawn a bb thread with Claude Code **Fable 5 Max 1M** (look up provider/model IDs — do not guess). Reuse this thread's environment so the reviewer sees the same files. Use `--parent-self` when this thread is coordinating the review. Then `bb thread wait` and show the exact `bb thread output`.
+**Default harness is bb.** Read `/nagent` and `/bb-cli` first. Spawn a bb thread with Claude Code **Fable 5 Max 1M** (look up provider/model IDs — do not guess). Reuse this thread's environment so the reviewer sees the same files. Use `--parent-self` when this thread is coordinating the review. Then `bb thread wait` and show the exact `bb thread output`.
 
 If the user names another harness (Cursor Task, cmux, Codex CLI, etc.), use that instead.
 

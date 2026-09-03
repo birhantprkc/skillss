@@ -14,14 +14,14 @@ Use this after creating or editing a skill. If the skill is distributed to all a
 Run git directly in the current shell. A push is a quick synchronous command — no persistent terminal, pane, or cmux needed.
 
 1. **Check what's pending** in `~/.agents`:
-   bash
+   ```bash
    cd ~/.agents && git status --short
-   
+   ```
    If there are unrelated uncommitted changes, stage only the skill folder(s) you changed — don't bundle unrelated work under one commit message.
 2. **Stage, commit, push**:
-   bash
+   ```bash
    cd ~/.agents && git add skills/<skill-name> && git commit -m "<concise message>" && git push
-   
+   ```
 3. **Verify** the push landed: the push output must show `main -> main`. If it doesn't, report the error — don't claim success.
 
 ## Notes

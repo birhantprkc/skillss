@@ -63,10 +63,10 @@ Short. Plain English. No preamble dump. No "here's what I found."
 
 Numbered list, 5–8 items max. Same shape every time:
 
-markdown
+```markdown
 1. [Title of the idea](https://x.com/...) (~808k views)
    One sentence with the actual insight.
-
+```
 
 Rules:
 

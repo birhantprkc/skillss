@@ -158,7 +158,7 @@ Always pass `--json` and `--title`.
 
 | Mode | Meaning |
 |---|---|
-| `accept-edits` | Sandbox on. User approves escalations. |
+| `accept-edits` | Sandbox on. The user approves escalations. |
 | `auto` | Sandbox on. Provider auto-approves. Codex/Claude have this. Cursor ACP does not. |
 | `full` | No sandbox. Needed for prod DB, many network tools, and "just go". |
 

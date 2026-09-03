@@ -181,6 +181,8 @@ Do not dump the prompt. Do not open the thread. Do not wait for it.
 
 If bb reports the worker is blocked on a command, file change, or permission, unblock it yourself. Do not wait for the user. Quickly read WHAT it wants to run and WHY (`bb thread interactions list <id> --json`), and if it fits the brief, approve it (`bb thread interactions approve <interactionId> <id>`). Only escalate to the user when the action is destructive, touches prod, or falls outside the brief.
 
+If the subagents you launched with this skill are BLOCKED, and waiting for some input or multi-choice select, make sure to UNBLOCK them yourself when it's obvious, trivial or safe -- only wait for the user when the next step is truly non-obvious.
+
 ## Archive (only when the user asks)
 
 Do not auto-archive after spawn.

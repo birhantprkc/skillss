@@ -13,7 +13,7 @@ If the user names another harness (Cursor Task, cmux, Codex CLI, etc.), use that
 
 Give it the necessary context, but make sure to stay neutral and unbiased. Do not nudge it towards any one specific solution. The goal here is to do great work. So be as objective and neutral as possible in writing the prompt for the subagent.
 
-Tell the user what to review, but don't be overly specific — let the reviewer find its own bugs and shortcomings. Just tell it to work extremely hard, to go deep in the review, and to surface any critical or serious issues found in the review.
+Tell it what to review, but don't be overly specific — let it find its own bugs and shortcomings. Just tell it to work extremely hard, to go deep in the review, and to surface any critical or serious issues found in the review.
 
 And when the subagent finishes, show the user its exact response in full. Do not rewrite it. Do not update it.
 

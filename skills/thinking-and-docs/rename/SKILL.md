@@ -1,6 +1,6 @@
 ---
 name: rename
-description: Manually-invoked skill that renames the current thread or session to 2-5 lowercase descriptive words. Use when David says "rename", "rename this", "rename thread", or "rename session".
+description: Manually-invoked skill that renames the current thread or session to 2-5 lowercase descriptive words. Use when the user says "rename", "rename this", "rename thread", or "rename session".
 disable-model-invocation: true
 triggers: [user, model]
 ---

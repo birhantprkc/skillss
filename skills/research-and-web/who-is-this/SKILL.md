@@ -1,6 +1,6 @@
 ---
 name: who-is-this
-description: 'Deep-scrape a person across X, LinkedIn, GitHub, and the open web to judge if they are legit. Manual-only; invoke with /who-is-this. Use when David says who-is-this, "who is this", "who is this guy", "research this person", "are they legit", "vet this founder", or drops a profile screenshot. Differentiator vs twitter-alpha: one-person background check, not a 7-person idea list. Differentiator vs deep-research: platform scrapes plus a short verdict, not a long cited memo.'
+description: 'Deep-scrape a person across X, LinkedIn, GitHub, and the open web to judge if they are legit. Manual-only; invoke with /who-is-this. Use when the user says who-is-this, "who is this", "who is this guy", "research this person", "are they legit", "vet this founder", or drops a profile screenshot. Differentiator vs twitter-alpha: one-person background check, not a 7-person idea list. Differentiator vs deep-research: platform scrapes plus a short verdict, not a long cited memo.'
 disable-model-invocation: true
 ---
 

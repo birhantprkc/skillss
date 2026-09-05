@@ -18,10 +18,15 @@ Use `bb-cli` for status, tell, wait, inspect, automations. This skill is spawn-o
 - After spawn: do **not** `bb thread open`, `--split`, or focus the new thread unless the user asks. Just launch. Report the thread id. Stop.
 - Do **not** poll, `bb thread wait`, or read logs unless the user asks.
 - Prefer bare `bb`. If `BB_CLI` is set, `"$BB_CLI"` is fine.
+- **Check your own mode first.** A child can never exceed the parent's permission mode. If this thread is not `full`, `--permission-mode full` is silently downgraded and the worker will ask for approvals.
 
 ## Recipe
 
 ```bash
+# 0. Pre-flight: must print "full". If not, STOP and tell the user
+#    "this thread is sandboxed (<mode>); relaunch me in full or spawn from the UI".
+scripts/permission-mode.sh "$BB_THREAD_ID"
+
 bb project list --json
 bb provider list --json
 bb provider models <provider-id> --json
@@ -133,7 +138,7 @@ Include:
 
 1. **Objective** — one sentence.
 2. **Constraints** — read-only vs implement; no git push; no prod writes.
-3. **Skills / files to use** — name them. Skills do not carry over. Example: prod reads → `~/.claude/skills/<relevant-skill>/SKILL.md`.
+3. **Skills / files to use** — name them. Skills do not carry over. Example: prod reads → `~/.claude/skills/<read-prod-skill>/SKILL.md`.
 4. **Deliverable** — what to return.
 5. **Validation** — how it knows it is done.
 6. **Report back** — concise report only, or diff + files changed.
@@ -164,7 +169,17 @@ Always pass `--json` and `--title`.
 
 Default for the user's investigation/build workers: `full`, with the prompt forbidding writes when the job is read-only.
 
+**Cursor fallback.** bb does not pass `--force` to `cursor-agent`; in any non-`full` mode Cursor's own allowlist decides (`~/.cursor/cli-config.json` → `permissions.allow`). "Not in allowlist: git -C" means a subcommand-level entry like `Shell(git status)`. Fix once: use `Shell(git)` (any git subcommand) plus common read-only tools (`ls`, `find`, `stat`, `du`, `jq`, `sed`, `awk`). Trap: a project-level `.cursor/cli.json` overrides the global file and brings prompts back.
+
 ## After spawn
+
+Verify the child actually got `full` (a sandboxed parent downgrades it silently):
+
+```bash
+scripts/permission-mode.sh <child-thread-id>   # must print "full"
+```
+
+If it prints anything else, say so loudly in the report. Do not report success.
 
 Tell the user, then stop:
 

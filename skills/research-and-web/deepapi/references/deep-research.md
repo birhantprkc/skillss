@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: 6ce186a5c87b. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: 0674cf823457. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 

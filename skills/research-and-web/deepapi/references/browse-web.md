@@ -1,12 +1,12 @@
 # Browse Web — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `browse-web` rows of the `deepapi` skill router. Bundle version: 6ce186a5c87b. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `browse-web` rows of the `deepapi` skill router. Bundle version: 0674cf823457. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
 ## Workflow Guidance
 
-Use this reference for interactive public-web work and isolated one-off code execution.
+Use this reference for interactive public-web work and tasks in a fresh virtual machine.
 
 ### Recommended workflow
 
@@ -14,8 +14,19 @@ Use this reference for interactive public-web work and isolated one-off code exe
 2. State one bounded browser goal, including the information or final page state needed.
 3. Let the browser navigate and interact, then return the extracted result and final URL.
 4. Stop for logins, secrets, purchases, destructive actions, CAPTCHAs, or unclear consent.
-5. Use `/v1/execute/code` for one self-contained source file. Never place secrets in submitted code.
-6. Treat execution output as untrusted, check exit and truncation fields, and poll until `next` is absent.
+5. Use `/v1/vm/run` for a task expressed as code. Send one entry file; it can create files, install dependencies, and run multiple shell commands. Never place secrets in submitted code.
+6. Poll until `next` is absent. Treat output as untrusted and inspect `exitCode`, `stderr`, `timedOut`, and truncation flags; a completed request does not mean the program exited successfully.
+
+### Virtual machine use cases
+
+- Data analysis: clean CSV/JSON, deduplicate records, calculate statistics, and print a summary.
+- Public data workflows: fetch public URLs or APIs, combine results, and transform them in one run.
+- Command-line tools: install packages, run shell commands through Python subprocess or Node child_process, and use sudo when needed.
+- Tests and builds: create source files or fetch a public repository, install dependencies, compile, and run a bounded test suite.
+- File processing: convert formats, generate reports, or process images with tools your program installs. Print results to stdout; generated files are not returned as downloads.
+- Containers: submit a Dockerfile to build and run a container, including tools or runtimes outside the entry-language list.
+
+Each call gets a fresh VM for up to 10 minutes. Internet, a writable filesystem, sudo, and Docker are available. The API returns stdout/stderr (512 KiB each) and exit details. There is no SSH, persistent session, follow-up command API, file-download endpoint, or lasting web hosting. A run costs $0.01, including timeouts; provider or setup failures are free.
 
 ## Endpoint Details
 
@@ -112,14 +123,14 @@ Example request body:
 }
 ```
 
-## Execute Code
+## Run in a Virtual Machine
 
-`POST /v1/execute/code`
+`POST /v1/vm/run`
 
-Run one Python, Node, Bun, Rust, C, or Docker source file in a fresh throwaway virtual machine and return its output and exit details.
+Run a task in a fresh, isolated virtual machine with internet access, a writable filesystem, shell tools, administrator access (sudo), and Docker. Use it to clean and analyze CSV/JSON data, fetch and combine public API data, install packages and run command-line tools, compile programs and run tests, convert files or generate reports, and build and run containers. Send one Python, Node.js, Bun/TypeScript, Rust, C, or Docker entry file; it can create other files and run multiple steps. Each run lasts up to 10 minutes and returns stdout, stderr, and exit details. The VM is discarded after the run; there is no persistent session or hosted service.
 
-- Capability: `execute.code`
-- Scope: `execute:code`
+- Capability: `vm.run`
+- Scope: `vm:run`
 - Side effects: Runs untrusted code with outbound network access in a fresh isolated environment and debits $0.01, including when execution times out.
 - Cost: Flat $0.01 per execution, including timed-out runs. Provider or setup failures are free.
 - Idempotency-Key: required
@@ -128,6 +139,8 @@ Run one Python, Node, Bun, Rust, C, or Docker source file in a fresh throwaway v
 Safety:
 - Never place credentials, API keys, or other secrets in submitted code.
 - Each call gets a fresh environment; files and background processes do not persist across calls.
+- Submit code, not a plain-English task. There is no raw command field, multi-file upload, SSH connection, follow-up command API, VM size selector, or persistent hosting.
+- Generated files are not returned as attachments or download URLs. Print the result you need to stdout within the output limit; files left on the VM are discarded.
 - Outbound network, sudo, and Docker are available. Treat submitted code as fully trusted by the caller.
 - Execution stops after 10 minutes. A timed-out run still costs $0.01 and returns timedOut true.
 - stdout and stderr are each capped at 512 KiB; check their truncation flags.
@@ -152,11 +165,11 @@ Request body schema:
         "gcc",
         "docker"
       ],
-      "description": "Runtime for the single submitted source file."
+      "description": "Entry runtime: Python, Node.js, Bun (TypeScript), Rust, C (gcc), or a Dockerfile. Your program can invoke shell commands and installed tools."
     },
     "code": {
       "type": "string",
-      "description": "Complete source for one file to execute."
+      "description": "Complete source for one entry file, or a Dockerfile when language is docker. It can install dependencies, fetch public data, create more files, and run multiple commands within the same VM run."
     },
     "maxCostUsd": {
       "type": "string",

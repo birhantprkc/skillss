@@ -35,5 +35,5 @@ Run both code reviews, merge the findings, and give the user one shortlist of re
 ## Rules
 
 - Keep every step's output short and in plain English.
-- Do not show the user the raw reviewer reports by default — only the merged shortlist. (They can ask for the full reports if they want them.)
+- Do not show the user the raw reviewer reports by default — only the merged shortlist. (The user can ask for the full reports if they want them.)
 - Never fix an issue before the user approves the shortlist.

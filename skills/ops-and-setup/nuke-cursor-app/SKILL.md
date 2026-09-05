@@ -39,8 +39,8 @@ that all live under the `/Applications/Cursor.app` bundle path.
 ### 1. Snapshot BEFORE killing
 
 ```bash
-DB="$HOME/Library/Application Support/<your-metrics-collector>/cursor-metrics.sqlite3"
-LOG_DIR="$HOME/Library/Application Support/<your-metrics-collector>/nuke-logs"
+DB="$HOME/Library/Application Support/<metrics-collector>/cursor-metrics.sqlite3"
+LOG_DIR="$HOME/Library/Application Support/<metrics-collector>/nuke-logs"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/$(date +%Y-%m-%d-%H%M).md"
 
@@ -51,8 +51,8 @@ ps -axo pid,rss,comm | grep "/Applications/Cursor.app" | grep -v grep
 ps -axo rss,comm | awk 'index($0, "/Applications/Cursor.app") {n++; s+=$1} END {printf "%d processes, %.1f GB", n, s/1048576; print ""}'
 
 # Last 30 min from the collector (read-only)
-sqlite3 -readonly "$DB" "SELECT datetime(<timestamp_col>,'unixepoch','localtime'), <role_col>, <process_count_col>, ROUND(<cpu_percent_col>,1), ROUND(<resident_bytes_col>/1073741824.0,2) || ' GB' FROM <metrics_table> WHERE <timestamp_col> > strftime('%s','now') - 1800 ORDER BY <timestamp_col>;"
-sqlite3 -readonly "$DB" "SELECT datetime(<timestamp_col>,'unixepoch','localtime'), <kind_col>, <role_col>, <reason_col>, <memory_pressure_col> FROM <events_table> WHERE <timestamp_col> > strftime('%s','now') - 1800 ORDER BY <timestamp_col>;"
+sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), role, process_count, ROUND(cpu_percent,1), ROUND(resident_bytes/1073741824.0,2) || ' GB' FROM raw_samples WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
+sqlite3 -readonly "$DB" "SELECT datetime(timestamp,'unixepoch','localtime'), kind, role, reason, memory_pressure FROM events WHERE timestamp > strftime('%s','now') - 1800 ORDER BY timestamp;"
 ```
 
 Write all four outputs into `$LOG` with headings: process list, totals,

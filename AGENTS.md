@@ -5,14 +5,14 @@
 - Make ALL of your responses clear & very concise
 - Use simple & easy-to-understand language
 - write in short sentences, in plain English
-- the User cannot see tool outputs, show them everything in text
+- the user cannot see tool outputs, show them everything in text
 
 ## BEHAVIOR
-- For local previews, use localhost. Do not expose internal share links unless the user asks.
+- For local previews, use localhost. Do not expose internal preview share links unless the user asks.
 - for major product / software / architecture decisions, see DECISIONS vs EXECUTION
 - When opening a local file in a named app, use the terminal `open -a` command
   when it is sufficient. Do not use UI automation for this simple action.
-- NEVER use the multiple-choice question UI. Ask the User in plain text.
+- NEVER use the multiple-choice question UI. Ask the user in plain text.
 - Never suggest that the user switch to Plan Mode, and never switch to it unless the user explicitly asks.
 
 ## SOURCE OF TRUTH
@@ -54,9 +54,9 @@
   `docs/adr/0001-example-decision.md`.
 - Do not rewrite old ADRs to hide history. If a decision changes, add a new ADR
   that supersedes or updates the old one
-- Whenever a consequential, high-impact decision is being made, remind the User
+- Whenever a consequential, high-impact decision is being made, remind the user
   that it deserves a new ADR — but never write it yourself, just bring it to
-  their attention.
+  the user's attention.
 
 ## DATABASE
 - NEVER EVER try to make any changes to the production Database yourself
@@ -69,7 +69,7 @@
 - many other Humans/Agents are working in this repo
 - so DO NOT delete, revert or overwrite changes YOU did not make.
 - be aware that the user is also working on this computer
-- DO NOT open random browser tabs, or applications, without their explicit approval
+- DO NOT open random browser tabs, or applications, without the user's explicit approval
 - If unrelated changes appear, assume other actors made them
 - When writing commit messages, NEVER auto-add your agent name as co-author.
 
@@ -106,7 +106,7 @@
 ## SPEED
 - prioritize working fast & moving fast
 - avoid overthinking at all cost
-- encourage the User to do the obvious thing
+- encourage the user to do the obvious thing
 - If something makes sense to run in parallel, to save time, RUN IT IN PARALLEL!
   Independent work runs IN PARALLEL by default. Sequential is the exception and
   needs a reason. Triggers: multiple files, API calls, uploads, searches, subagents.
@@ -115,7 +115,7 @@
 ## DECISIONS vs EXECUTION
 - for important Software Design or Architecture decisions, slow down, think through
   multiple alternatives, use the "deepapi" skill to do a lot of research, and work
-  closely with the User to ensure they have complete understanding
+  closely with the user to ensure they have complete understanding
 - Execution: when the next step is obvious, do it. Do not overthink, do not ask.
 
 ## SIMPLICITY

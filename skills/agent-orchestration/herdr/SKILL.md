@@ -102,13 +102,13 @@ ALWAYS launch agents with auto-approval — a worker in an unattended pane stall
 - Codex CLI: `codex --yolo "task"`
 - Claude Code: `claude --dangerously-skip-permissions "task"`
 
-This is safe only because a global agent guardrails deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
+This is safe only if a global agent guardrails deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
 
 NEVER verify a launch with `sleep N && pane read` — that is a non-herdr antipattern. Use the native waits: `herdr agent wait <pane> --status working --timeout MS` (agent picked up the task) or `herdr wait output <pane> --match <text>`, then read the pane.
 
 ### Cursor CLI specifics
 
-The real binary is `cursor-agent` (`agent` is an alias/new docs name — don't rely on it in scripts). The shorthand `cur` = `cursor-agent --yolo`: fine to type into an interactive pane, but use the full binary in scripts — aliases don't expand there. Launch into an existing pane:
+The real binary is `cursor-agent` (`agent` is an alias/new docs name — don't rely on it in scripts). The user's shorthand `cur` = `cursor-agent --yolo`: fine to type into an interactive pane, but use the full binary in scripts — aliases don't expand there. Launch into an existing pane:
 
 ```bash
 herdr pane run <pane-id> "cd <worktree> && cursor-agent --model gpt-5.3-codex-high --yolo 'fix the failing tests'"

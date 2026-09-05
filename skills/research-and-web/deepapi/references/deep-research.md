@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: 0674cf823457. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: b4f140d187ae. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -13,6 +13,7 @@ Use this reference to find current information, build evidence, and produce a so
 - Quick fact, source discovery, or current lookup: use `POST /v1/search/web`. Always run 5+ different, separate calls, each with a slightly different prompt, then keep the strongest sources. Request 10+ results per query — 1-10 results cost the same flat price, so smaller asks just discard recall.
 - Known-person lookup: start with a narrow exact web search and read the strongest public profile directly. Use Deep Research only when identity is ambiguous or multi-source synthesis is needed.
 - Multi-source analysis, comparison, or decision memo: use `POST /v1/research/deep` with the exact question, scope, and desired output.
+- Structured dossier on a person, company, or topic: use `POST /v1/scrape/deep`. It collects profiles, posts, people, and websites with source links. See the Deep Scrape recipe in `scraping.md`.
 - A platform-specific lookup belongs in the scraping workflow. Use its dedicated endpoint instead of an open-web `site:` query.
 
 ### Recommended workflow

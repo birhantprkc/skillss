@@ -1,6 +1,6 @@
 # Scraping — DeepAPI Workflow Guide
 
-Managed workflow guide for the `scraping` rows of the `deepapi` skill router. Bundle version: 0674cf823457. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Managed workflow guide for the `scraping` rows of the `deepapi` skill router. Bundle version: b4f140d187ae. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`.
 
@@ -14,17 +14,33 @@ Use this reference to collect structured public data for research, monitoring, l
 | --- | --- | --- |
 | Extract a site or document | `/v1/scrape/website` or `/v1/scrape/pdf` | Follow discovered pages only when the task needs them |
 | Research developers or software | `/v1/scrape/github/search` | GitHub repository, profile, issues, pulls, contents, or commits |
-| Research people, companies, or hiring | LinkedIn people, company, or jobs endpoints | LinkedIn profile or posts for deeper context |
+| Research people, companies, or hiring across sources | `/v1/scrape/deep` | Use source links to verify facts and investigate gaps |
 | Research creators and content | `/v1/scrape/youtube/search` or `/v1/scrape/tiktok/search` | YouTube transcript, channel, or shorts; TikTok profile, posts, comments, or transcript |
 | Monitor conversations and audience response | X/Twitter, Reddit, Instagram, or Threads endpoints | Use `/v1/scrape/threads/posts` for exact Threads post URLs |
 | Research advertising | `/v1/scrape/facebook/ads` | Go deep: competitor `pages` plus keyword queries, `activeStatus: "all"`, `maxItems` 100+ (see the Meta Ads recipe below) |
 | Find local businesses and places | `/v1/scrape/google/places` | Narrow by location and category; set `maxItems: 1` when looking up one specific business (much faster and cheaper) |
 
+### Deep Scrape (`POST /v1/scrape/deep`)
+
+Use for sponsor research, podcast guest preparation, or company profiles. Deep Scrape discovers relevant sources and combines the results into one JSON dossier. Use Deep Research for a question or comparison; use a website or platform endpoint when you only need that source.
+
+Send `query` with the subject's name and useful identifying context. Add known public website or profile URLs in `urls` to reduce mistaken identities. Optional `sources` limits the platforms searched. Read `GET /v1/capabilities?capability=scrape.deep` for the current schema and supported fields.
+
+Example request body (use the shared auth and Idempotency-Key headers):
+```json
+{ "query": "Stripe, the payments company", "urls": ["https://stripe.com"], "maxCostUsd": "0.50" }
+```
+
+- The default customer spend cap is $0.50; `maxCostUsd` is optional. The cap is a limit, not a quoted charge. `dryRun: true` previews the hold for free.
+- The POST returns `202`. Wait `next.afterSecs` and poll the returned `next.path` until no polling action remains. Recover an existing result with `GET /v1/requests/{requestId}` instead of paying to run it again.
+- Read `output.subject`, `profiles`, `posts`, `people`, `websites`, and `sources`. Preserve source links. Check `conflicts`, `confidence`, `errors`, and `partial` before calling the dossier complete or treating identities as certain.
+- Useful partial and low-confidence results are billable at actual usage within the cap. No usable matching data means no charge. Report missing information clearly; a source link alone does not prove a fact.
+
 ### Recommended workflow
 
 1. Define the entities and fields the final output needs.
-2. Use the dedicated platform endpoint. Never replace it with open-web search.
-3. Discover identifiers first, then fan out: call the detail endpoint for every candidate that could change the answer, not just the obvious top one.
+2. For a dossier across sources, use Deep Scrape. For one platform, use its dedicated endpoint rather than open-web search.
+3. For platform lists, discover identifiers first, then fan out: call the detail endpoint for every candidate that could change the answer, not just the obvious top one.
 4. Size `maxItems` to the job, not to caution: on cheap per-item endpoints (Meta ads ~$0.00375 per ad) request 100+, and continue with returned page tokens whenever the task needs more.
 5. Preserve source URLs and report missing, private, blocked, or partial data honestly. When a result looks wrong, blocked, or suspiciously empty, also send one free `POST /v1/feedback` with the `requestId`.
 

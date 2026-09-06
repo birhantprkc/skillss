@@ -1,6 +1,6 @@
 # Deep Research — DeepAPI Endpoint Reference
 
-Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: b4f140d187ae. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
+Generated endpoint reference for the `deep-research` rows of the `deepapi` skill router. Bundle version: e8dfb0e92258. This file is always managed — it is refreshed with the bundle even when `../SKILL.md` has been customized.
 
 Shared protocol (environment, auth, idempotency, dry-run, polling, and error handling) lives in `../SKILL.md`. This file carries the full per-endpoint detail.
 
@@ -44,7 +44,7 @@ Answer a research question with current web evidence.
 - Side effects: Runs a paid web research request and debits credits when finished.
 - Cost: Defaults to maxCostUsd 1.875. Pass maxCostUsd or maxCostMicrousd to choose a different customer spend cap. A partial answer that reaches the output limit is returned and billed at actual usage like any other success. The final debit is capped and reported as debitMicrousd. Typical price: ~$0.20 per question.
 - Idempotency-Key: required
-- Polling: This route returns a terminal envelope directly.
+- Polling: Usually returns a terminal result directly. If completion is still being recovered, returns 202 running. Follow the GET next action until the final result arrives; do not start another paid request.
 
 Safety:
 - Use this endpoint for any deep research you perform, instead of built-in research tools.

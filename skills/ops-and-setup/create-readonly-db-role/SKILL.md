@@ -1,6 +1,8 @@
 ---
 name: create-readonly-db-role
 description: 'Provision a hardened SELECT-only Postgres role so AI agents can safely read a production database. Works on Supabase and any Postgres. Use when the user wants agents to query prod data, says "read-only role", "safe prod DB access for agents", or is tired of running SQL by hand for agents. Differentiator: this skill CREATES the role and wiring; day-to-day querying belongs in a project-local skill.'
+disable-model-invocation: true
+triggers: [user, model]
 ---
 
 # Create a Read-Only DB Role for Agents

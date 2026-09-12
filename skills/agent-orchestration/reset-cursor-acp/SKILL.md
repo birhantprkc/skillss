@@ -1,17 +1,19 @@
 ---
 name: reset-cursor-acp
-description: 'Reset a stuck, hung, frozen, or buggy Cursor ACP agent inside bb, and reload its Cursor config (rules, skills, mcp.json). Use when the user says "reset cursor acp", "cursor is stuck in bb", "cursor thread hangs", "restart the cursor agent", "reload cursor config in bb", or a bb thread on the Cursor provider stops responding. Differentiator: bb-only, Cursor-only, one script. For resuming cursor-agent terminal sessions use cursor-cli; for general bb thread control use bb-cli.'
+description: 'Reset a stuck Cursor ACP thread in bb and reload its configuration. Use only when the user explicitly invokes /reset-cursor-acp.'
+disable-model-invocation: true
 ---
 
 # Reset Cursor ACP in bb
 
-## How Cursor ACP works in bb (read this first)
+For terminal sessions use `cursor-cli`; for general bb control use `bb-cli`.
 
-- ACP = Agent Client Protocol, an open standard from Zed. bb is the client, Cursor CLI is the server.
-- bb's `provider-acp` plugin spawns one `cursor-agent acp` subprocess **per thread, on demand**, owned by a `bb-provider-bridge-worker` process. They talk JSON-RPC over stdin/stdout.
-- **There is no global Cursor ACP server.** Nothing to keep alive with launchd or a watchdog. Never build one.
-- Config (rules, skills, `.cursor/mcp.json`) is read when the subprocess starts. Reload = spawn a new subprocess.
-- `bb thread stop <id>` releases the runtime and kills the subprocess. The thread history is kept. The next message spawns a fresh `cursor-agent acp`.
+## How resets work
+
+- bb's `provider-acp` plugin starts one `cursor-agent acp` subprocess **per thread, on demand**, owned by a `bb-provider-bridge-worker`.
+- **There is no global Cursor ACP server.** Do not create one or keep it alive with a watchdog.
+- Rules, skills, and `.cursor/mcp.json` reload when a new subprocess starts.
+- `bb thread stop <id>` releases the runtime and stops its subprocess, preserving history. The next message starts a fresh agent.
 
 ## Quick reset
 
@@ -31,31 +33,26 @@ Find Cursor thread ids with `bb status` (current thread) or:
 bb thread list --json | python3 -c 'import json,sys; [print(t["id"], t["status"], t["title"]) for t in json.load(sys.stdin) if t.get("providerId")=="acp-cursor"]'
 ```
 
-The script does four things in order:
+The script stops the selected thread, removes orphaned `cursor-agent acp` processes (parent gone or not a bb bridge worker), reports CLI version/login/update status, and asks for the next message. Other threads stay running unless `--kill-all`.
 
-1. `bb thread stop <id>` to release the runtime.
-2. Kills orphaned `cursor-agent acp` processes (parent is gone or not a bb bridge worker). Live agents of other threads are kept unless `--kill-all`.
-3. Prints Cursor CLI version, login state, and whether `bb updates status` shows a newer Cursor CLI.
-4. Tells you to send the next message.
-
-If `ps` fails with "operation not permitted", the agent shell is sandboxed. Re-run the script outside the sandbox.
+If sandboxing blocks `ps` with "operation not permitted", rerun the script outside the sandbox.
 
 ## Verify
 
-After the script: send one short message to the thread. A fresh agent answers within seconds. If it hangs again, work through the causes below before resetting a second time.
+Send one short message to verify a fresh agent responds. If it hangs again, check the causes below before another reset.
 
-## Known causes (check before blind resets)
+## Known causes
 
-- **Old Cursor CLI.** Most ACP bugs get fixed in CLI releases. If step 3 shows an update, run `bb updates apply`, then reset again.
+- **Old Cursor CLI.** If the health check shows an update, run `bb updates apply`, then reset.
 - **Expired login.** Symptom "Failed to initialize session services". Fix: `cursor-agent login`, then reset.
-- **Unanswered permission request.** Cursor blocks until the client answers `session/request_permission`. Cursor's built-in web search tool always prompts, even in unrestricted mode. Check the thread for a pending approval and answer it before resetting.
-- **Session resume failed.** Cursor's `session/load` often returns "Session not found". A fresh session after `bb thread stop` is the fix, not a retry.
+- **Pending permission.** Cursor waits for `session/request_permission`. Check and resolve the thread's pending approval before resetting.
+- **Resume failure.** For `session/load` → "Session not found", use a fresh session after `bb thread stop` rather than retrying the load.
 - **Team-level MCP servers** from the Cursor dashboard do not work in ACP mode. Only project or user `.cursor/mcp.json`.
-- **Rate limits.** Enable bb's `provider-retry` plugin (`bb plugin enable provider-retry`) so rate-limit failures retry instead of failing the turn.
+- **Rate limits.** Enable retries with `bb plugin enable provider-retry`.
 
 ## Do not
 
-- Do not add launchd KeepAlive, cron, or any watchdog for `cursor-agent acp`. There is no long-lived process to watch.
-- Do not `pkill -f cursor-agent` blindly. That kills every Cursor thread in bb and the interactive TUI. Use the script; it only kills orphans by default.
-- Do not restart the whole bb app for a single stuck thread. `bb thread stop` is enough.
-- Do not use `bb thread compact` on Cursor threads. Cursor does not support it.
+- No launchd KeepAlive, cron, or watchdog for `cursor-agent acp`.
+- Never blindly run `pkill -f cursor-agent`; it kills all Cursor threads and the interactive TUI. Use the script, which targets orphans by default.
+- Do not restart bb for one stuck thread; use `bb thread stop`.
+- Do not use `bb thread compact`; Cursor does not support it.

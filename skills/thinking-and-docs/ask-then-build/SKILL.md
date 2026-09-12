@@ -1,6 +1,6 @@
 ---
 name: ask-then-build
-description: 'Scope a feature, change, or refactor by asking the user 3-6 pointed questions ONE at a time (options A-D, state a preference, wait), record every answer, then deliver ONE concise paragraph prompt that another agent can implement from. Use when the user says "ask-then-build", "ask me questions then give me a prompt", or wants a spec turned into a build prompt for another agent. Differentiator: question-then-prompt loop; next-decision only drills decisions, brain-to-docs extracts vision into docs.'
+description: 'Clarify a feature, change, or refactor through questions, then write a build prompt for another agent. Use for /ask-then-build or requests to ask questions before producing an implementation prompt.'
 ---
 
 Turn a feature idea into a build prompt for another agent, in two phases.

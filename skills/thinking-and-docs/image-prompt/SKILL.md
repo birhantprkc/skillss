@@ -1,15 +1,15 @@
 ---
 name: image-prompt
-description: 'Turn any idea, brief, or rough instruction into 4 ready-to-paste prompts for AI image models (Midjourney, Nano Banana, GPT Images, Seedream, Flux, any other). Use when the user asks for an image prompt, a thumbnail / banner / logo / illustration prompt, says "write a prompt for this image", or wants to turn a description into something an image model can render. Differentiator: writes the prompt text only — to actually generate the image use the deepapi skill.'
+description: 'Write four distinct prompts for AI image models. Use for image, thumbnail, banner, logo, or illustration prompts. Produces prompt text only.'
 ---
 
 # Image Prompt
 
-Turn the request into 4 prompt variations. The user pastes them into whatever image model they are using, so the prompts must be model-agnostic.
+Write 4 model-agnostic prompt variations that the user can paste into any image model.
 
 ## Output format
 
-- Exactly 4 variations. Each is ONE paragraph inside its own fenced code block. Nothing else inside the code block.
+- Exactly 4 variations, each one paragraph in its own fenced code block. Nothing else inside.
 - Always use a `text` fence so it renders as a full copyable block, not a tiny snippet. Pattern:
   1. Blank line after the label
   2. Opening fence on its own line: three backticks then `text`
@@ -21,7 +21,7 @@ Turn the request into 4 prompt variations. The user pastes them into whatever im
 
 ## How to write each prompt
 
-Write like a great expressive artist describing a finished piece. Concise, clear, highly descriptive. Every paragraph covers, in flowing prose:
+Describe a finished piece in clear, expressive, descriptive prose. Each paragraph covers:
 
 1. **Subject** — what it is, what it is doing, the defining details.
 2. **Environment** — where it sits, background, lighting, time of day.

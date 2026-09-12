@@ -1,22 +1,18 @@
 ---
 name: who-is-this
-description: 'Deep-scrape a person across X, LinkedIn, GitHub, and the open web to judge if they are legit. Manual-only; invoke with /who-is-this. Use when the user says who-is-this, "who is this", "who is this guy", "research this person", "are they legit", "vet this founder", or drops a profile screenshot. Differentiator vs twitter-alpha: one-person background check, not a 7-person idea list. Differentiator vs deep-research: platform scrapes plus a short verdict, not a long cited memo.'
+description: 'Research a person''s public track record and give a short credibility assessment. Use only when the user explicitly invokes /who-is-this.'
 disable-model-invocation: true
 ---
 
 # who-is-this
 
-Figure out who a person is and whether their story holds.
-
 Read the `deepapi` skill first. All search and scraping goes through DeepAPI. Never use built-in search, fetch, or a browser.
 
 ## Seed
 
-Need a person. A name, handle, URL, or profile screenshot is enough.
+Accept a name, handle, URL, or profile screenshot. If missing, ask once; never guess a person.
 
-If missing, ask once. Do not guess a different person.
-
-Verify identity before going deep. Bio, company, location, and photo must match. If two people share the name, stop and ask.
+Verify matching bio, company, location, and photo before deeper research. If identity is ambiguous, stop and ask.
 
 ## Research
 
@@ -31,20 +27,18 @@ Follow DeepAPI polling. If a platform is missing or private, say so. Do not inve
 
 ## What to extract
 
-Scrape wide, report narrow. From everything you pulled, keep only the 3 facts that explain who this person is. Drop the rest — a full CV is a failure, not thoroughness.
-
-Rules:
+Keep only the 3 facts that best explain who the person is; omit the rest.
 
 - Real track record beats bio. Jobs, products, exits, code, talks.
 - Self-reported numbers stay labeled "their claim". Verified numbers say "verified".
-- Note what they actually post about only if it changes the verdict.
-- Name the honest archetype: builder, marketer, operator, researcher, grifter, investor, recruiter, hobbyist, etc. Pick the one that is true in practice, not the one in their bio.
+- Include posting topics only if they change the verdict.
+- Choose the archetype their track record supports: builder, marketer, operator, researcher, grifter, investor, recruiter, hobbyist, etc.
 
 Ignore congrats, logo spam, paid "king of X" press, and follower-count flexing.
 
 ## Output
 
-Hard cap: 100 words after the header line. Plain English. Short sentences. No tables. No sub-bullets. No tweet dumps. No research narration. No "I found" / "I scraped".
+Maximum 100 words after the header. Use short, plain-English sentences. No tables, sub-bullets, tweet dumps, or research narration.
 
 ```markdown
 **Full name** — [@handle](https://x.com/handle) · [LinkedIn](url) · [GitHub](url) · [Site](url)
@@ -56,21 +50,21 @@ Hard cap: 100 words after the header line. Plain English. Short sentences. No ta
 **Verdict:** One line. The archetype, whether the story holds, and why.
 ```
 
-Example of the right length (fictional):
+Fictional example:
 
 ```markdown
 **Jane Doe** — [@janedoe](https://x.com/janedoe) · [LinkedIn](https://linkedin.com/in/janedoe) · [GitHub](https://github.com/janedoe)
 
-**Who:** Berlin solo founder of Acme, an open-source Postgres proxy. Writes 90% of the commits herself.
+**Who:** Berlin solo founder of Acme, an open-source Postgres proxy.
 
 **Track record:**
-- 2024–now: Founder, Acme. 2.1K stars (verified), no funding, no revenue (her own post).
+- 2024–now: Acme founder. 2.1K stars (verified); no revenue (her claim).
 - 2019–2024: Backend engineer at Zalando and N26.
-- "50K users" is her claim; nothing backs it.
+- Claims "50K users"; unverified.
 
-**Verdict:** Solo builder, not a company yet. Real code, honest numbers, one unproven user claim.
+**Verdict:** Solo builder with real code; user numbers remain unverified.
 ```
 
 Omit a missing profile link instead of faking it.
 
-Follow-ups: answer in 1–3 sentences. Do not re-run the scrape unless the first pass missed that platform.
+Follow-ups: 1–3 sentences. Re-scrape only if the first pass missed that platform.

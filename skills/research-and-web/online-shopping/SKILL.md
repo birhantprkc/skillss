@@ -1,19 +1,17 @@
 ---
 name: online-shopping
-description: 'Research any online purchase with DeepAPI — fair-price checks, best deals, where to buy, shop trust, and VAT/tax savings. Load on ANY shopping, buying, purchasing, checkout, subscribe, SaaS plan, software subscription, Stripe/payment page, or "is this a good price" moment — including product photos and listing or checkout screenshots. Differentiator: research-only shopping help plus a company VAT-number reminder; never places orders.'
+description: 'Research online purchases, prices, and shop trust. Use for buying advice, subscriptions, or shopping photos, links, and checkout screens.'
 ---
 
 # Online Shopping Research
 
-Auto-invoke this skill. Do not add `disable-model-invocation` (or Codex `allow_implicit_invocation: false`). Models must load it on their own whenever the user is buying anything online.
+Auto-invoke for online purchases. Do not add `disable-model-invocation` or Codex `allow_implicit_invocation: false`.
 
-The whole purpose of this skill: save the user time and money when shopping online. Answer three things: what is a fair price, where to buy, and whether the shop can be trusted. On checkout, also save tax.
+Find a fair price, trusted places to buy, and legal checkout tax savings. Fable 5 is the preferred model for this skill.
 
-For best results run this skill with the Fable 5 model — it is very smart and already knows a lot about products, pricing, and shops.
+**Research only.** Never place orders, create shop accounts, or enter payment, address, company, or VAT/tax details. Remind the user to enter them; never save those values in this skill or any file.
 
-Research only. Never place orders, enter payment, address, or VAT/tax IDs, or create shop accounts. Remind the user; do not type those details for them.
-
-Non-negotiable: every response to the user is very concise, clear, and formatted in nice readable markdown. The How to answer section is a hard contract — check every response against it before sending.
+Keep every response concise and readable. Check it against **How to answer** before sending.
 
 ## Setup
 
@@ -46,57 +44,43 @@ If `status: running`, poll `GET /v1/requests/{requestId}` after `next.afterSecs`
 
 ## VAT and sales tax
 
-Treat extra VAT/GST/sales tax as money to save, not as a dead end.
+On checkout, subscription, or SaaS plan screens—especially Stripe or a VAT/GST/tax line—remind the user **before paying**:
 
-On any checkout, subscribe, or SaaS/plan screen — especially Stripe, and especially when VAT/GST/tax is a line item — remind the user **before they pay**:
+- If they have a company, buy as a business and enter its VAT ID (EU VAT number, Polish NIP, GSTIN, or local equivalent). For eligible EU B2B digital purchases, reverse charge can remove VAT from checkout.
+- Look for “purchasing as a business”, “VAT number”, “tax ID”, or “add billing details”. Currency changes do **not** remove VAT.
+- If tax is already $0 with a VAT ID, skip the reminder. If tax remains, check business status and VAT ID; do not promise removal without checking eligibility.
+- Never suggest a VPN, fake address, or borrowed card.
 
-- If they have a company, buy as a business.
-- Enter the company VAT ID (EU VAT number, Polish NIP, GSTIN, or the local equivalent). For EU B2B digital goods this is reverse charge: VAT at checkout often drops to $0.
-- Look for "purchasing as a business", "VAT number", "tax ID", or "add billing details". Currency toggles (USD vs local) do **not** remove VAT.
-- Never suggest a VPN, a fake address, or a borrowed card.
-- Never fill in the VAT ID, company name, or card yourself. Never write those values into this skill or any file.
-- If tax is already $0 with a VAT ID, do not nag. If tax is still added, tell them to tick business + VAT ID.
-
-Do not tell the user they "cannot avoid VAT" when a company VAT ID is the normal legal fix.
+Treat tax as a possible legal saving; do not dismiss a valid business VAT option as “unavoidable tax”.
 
 ## How to research
 
-Use your judgment. The goal is a confident answer, not a fixed procedure.
+1. **Give first impressions before any research**, whatever the price. In 1–2 sentences, react to the screenshot, link, or description: apparent value, seller reputation, or a rough price range. Make clear these are preliminary. For a checkout with VAT, include the company VAT ID reminder, unless tax is already $0.
+2. **Identify the exact item and buying intent:** what it is for, who it is for, and whether price, quality, or delivery matters most. Infer from context; ask one short question only if uncertainty would change the recommendation.
+3. **Scale research to the price:**
+   - **Obvious call:** the screenshot or conversation is enough to judge; answer immediately, without searches or scrapes.
+   - **Cheap (roughly under $50):** answer from existing knowledge. At most one quick web search if unsure; no scraping or deep research. Keep it especially brief.
+   - **Mid-range:** a few searches; scrape the listing and one or two top competitors.
+   - **Expensive ($1,000+):** deep research, several search variants, and scrapes of several shops and buyer reviews.
 
-ALWAYS open with first impressions — before ANY web search, scrape, or deep research, no matter the item or its price. In one or two sentences, react to whatever the user provided (screenshot, link, description) from your own knowledge: does it look like a good deal, is the seller reputable, what is the typical price range — anything useful that comes to mind. The user must never sit waiting with nothing to read. If the screenshot is a checkout with VAT, say so in that first impression and remind them about the company VAT ID.
+Use judgment within these limits. As needed for the price tier:
 
-Extract the shopping intent early. Right after first impressions, make sure you know why the user is buying: what the item is for, who it's for, and what matters most to them (price, quality, delivery speed). Infer it from the conversation or screenshot when you can; if it's unclear and would change your recommendation, ask one short question. Knowing the real intent is how you help the user make the best possible purchase — not just find the lowest price.
-
-Then scale research effort to the item's price. A cheap item researched for minutes is this skill failing its purpose:
-
-- **Obvious call** — the screenshot or conversation already gives you enough to judge: answer right away. Zero searches, zero scrapes.
-- **Cheap (roughly under $50)**: answer from your own knowledge — you already know what everyday items cost. At most ONE quick web search, and only if genuinely unsure. Scraping and deep research are forbidden in this tier. Respect the user's time above all: answer even more quickly, clearly, and concisely than usual.
-- **Mid-range**: a few searches, scrape the listing and a top competitor or two.
-- **Expensive ($1,000+)**: full depth — deep research, many search variants, scrape several shops and buyer reviews.
-
-First impression example: "Cars of this brand and year usually go for €18-25k, so this looks slightly high — running a deep check to verify."
-
-Then, as needed for the price tier:
-
-- Identify the exact item from the conversation or the attached photo/screenshot.
-- Infer the delivery country from the conversation or screenshot. If unclear, ask where it should be delivered. Search shops in that country or nearby ones with sensible shipping — whatever makes sense for that user.
-- For branded merch, check for an official store first; if none exists, suggest reputable print-on-demand shops and say the item is unofficial.
-- Avoid scam and dropshipping shops: too-good-to-be-true prices, no company info, fake urgency, weeks-long shipping from a "local" shop. Verify unknown shops before recommending them.
+- Infer the delivery country; ask if unclear. Find shops there or nearby with sensible shipping.
+- For branded merch, check the official store first. If none exists, suggest reputable print-on-demand shops and label the item unofficial.
+- Avoid scam and dropshipping shops. Verify unknown shops before recommending them. Watch for implausibly low prices, missing company info, fake urgency, and weeks-long shipping from a “local” shop.
 
 ## How to answer
 
-The format below is a hard rule, not a preference. Draft the response, check it against this list, and rewrite it if it fails any point:
+Draft, check, and revise against this format:
 
-- Very concise: the whole answer fits on one screen. Short sentences. Plain English.
-- No filler, no hedging, no research narration ("I searched for...", "Let me check..."). Conclusions only.
-- Nice readable markdown: a bold verdict line first, then short bullets or a small table. Never a wall of text, never long paragraphs.
-- Verdict up top — good deal, fair, or overpriced — with the fair price range.
-- Best 2-3 places to buy: links + local-currency prices.
-- On checkout/subscribe screens, one short VAT line: use a company VAT ID if they have one.
-- Only quote prices you actually found. Say it plainly when results are thin.
-- Don't report research costs unless the user asks.
+- Fit on one screen: short sentences, plain English, readable Markdown.
+- Start with a **bold verdict**—good deal, fair, or overpriced—and the fair price range.
+- Use short bullets or a small table with the **best 2–3 places to buy**, links, and local-currency prices.
+- On checkout/subscription screens, add one short company VAT ID reminder when applicable.
+- Quote only prices actually found; clearly label preliminary estimates and say when results are thin.
+- Give conclusions without filler, hedging, or research narration. Report research costs only if asked.
 
-Shape every answer like this:
+Example:
 
 ```markdown
 **Verdict: Overpriced — fair price is €280–€330, this listing asks €449.**
@@ -110,5 +94,3 @@ Skip shiny-deals24.shop — €99 for this item is a classic scam price.
 
 VAT: if you have a company, tick business and enter the VAT ID before paying.
 ```
-
-Success looks like this: the user found the right product quickly and bought it from a trusted, reputable shop at a good deal — not from an overpriced reseller or dropshipping store — and did not pay extra VAT they could legally reverse-charge.

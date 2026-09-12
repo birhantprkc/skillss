@@ -1,61 +1,51 @@
 ---
 name: goal-loop
-description: Explain and write effective instructions for the `/goal` feature — the persistent self-checking agent loop (plan → act → test → review → iterate), available in agents like Codex, Claude Code, and Hermes Agent. Use when the user mentions `/goal`, "goal loop", "Ralph loop", wants to kick off a long-running autonomous agent run, asks how to write a goal prompt, or wants a one-paragraph goal instruction drafted.
+description: 'Draft /goal prompts and explain persistent agent loops. Use for goal or Ralph loops, autonomous run setup, monitoring, and troubleshooting.'
 ---
 
 # Agent `/goal` Loop
 
 ## What `/goal` is
 
-`/goal` is a slash command that turns an agent prompt into a **persistent agent** looping `plan → act → test → review → iterate` until a stop condition is met, the user pauses, or the token budget runs out. Internally called the "Ralph loop."
+`/goal` makes an agent persist through `plan → act → test → review → iterate`.
+If a turn ends before the goal is met, it auto-continues instead of waiting for
+input. The loop ends at its stop condition, a user pause, or the token budget
+limit. It is also called the “Ralph loop”.
 
-Agents with the `/goal` feature right now: **Codex, Claude Code, and Hermes Agent**.
+Before giving runtime instructions, check goal support in the installed agent
+and interface through its help, exposed tools, or current official documentation.
+Verify feature flags, authentication, and limits; do not transfer one agent's
+requirements to another. Lifecycle states, budgets, and pause/resume vary by runtime.
 
-Key difference from a normal prompt: when a turn ends but the goal isn't met, the agent **auto-continues** instead of waiting for input.
-
-**Lifecycle states:** `pursuing`, `paused`, `achieved`, `unmet`, `budget-limited`.
-
-When monitoring a running `/goal`, every check should include a one-line update to the user: what the agent is doing and whether it is on track. Keep it extremely concise.
-
-**Not:** a budget command, a safety boundary, "run forever", or a replacement for `/plan`. It's a contract enforcer with a verification loop.
-
-## Requirements
-
-- An agent with the `/goal` feature — right now: Codex, Claude Code, or Hermes Agent
-- The goals feature enabled in the agent's config
-- **Subscription auth** — API-key auth does **not** work. A pro-tier plan is the realistic minimum for long runs.
+A goal enforces a contract through verification. It is not a budget command,
+a safety boundary, “run forever”, or a replacement for `/plan`.
 
 ## When to use it
 
-Use only when **all three** are true:
-1. Task is >30 min of mechanical work.
-2. There's a **verifiable stop condition** (tests pass, coverage hit, eval ≥ X, build green).
-3. Repo is agent-ready (working build, decent tests, `AGENTS.md` present).
+Use for repeated autonomous work with a **verifiable stop condition**: passing tests, target coverage, eval ≥ X, or a green build. For code work, establish a working build and relevant checks first. No minimum task duration applies.
 
 Fits: migrations, coverage lifts, TDD feature builds, refactors with contract tests, prompt/eval optimization, deploy retry loops, bug-repro-then-fix.
 
 Bad fits: exploratory work, vague "improve this", anything without a "done" definition, prod credentials, destructive shared-infra ops.
 
-## The 5-part contract (every goal needs this)
+## The 4-part contract (every goal needs this)
 
 1. **Objective** — one sentence, one concrete outcome.
 2. **Constraints** — what must NOT change (public API, files, libs, conventions).
 3. **Validation command** — the exact shell command that proves progress (`pytest -q`, `pnpm test`, etc.).
 4. **Stop condition** — verifiable: "Stop when X passes" OR "when further changes need human/product input."
-5. **Documentation** — one sentence instructing the agent to write concise, targeted docs for every change, either creating new `.md` files or updating existing ones.
 
-Plus: tell the agent what to read first, ask it to work in checkpoints with a short progress log.
+Also specify what to read first, checkpoints, and a short progress log.
 
 ## Writing a goal (the core deliverable)
 
-When the user wants a quick `/goal` instruction, produce a structured markdown block with one line per contract item (proper newlines, not flowing prose). **Do not prefix the output with `/goal`** — the user adds the slash command themselves in the composer. Emit only the contract body. Template:
+When asked for a goal prompt, return only the contract body as a Markdown block, one item per line. **Do not prefix it with `/goal`** — the user adds that command in the composer.
 
 ```
 **Objective:** <one-sentence objective>
 **Read first:** <files/PLAN.md/issue>
 **Constraints:** <what not to change, libs, conventions>
-**Validate:** `<exact command>` after each change
-**Document:** Write concise, targeted documentation for all changes — create new `.md` files or update existing docs as needed.
+**Validate:** <relevant checks during work and final acceptance command>
 **Checkpoints:** work in checkpoints and log progress briefly
 **Stop when:** <verifiable condition>, OR when further changes require human/product input
 ```
@@ -66,7 +56,7 @@ When the user wants a quick `/goal` instruction, produce a structured markdown b
 **Objective:** Migrate this project from Pydantic v1 to v2.
 **Read first:** pyproject.toml, src/, tests/
 **Constraints:** no public API changes; keep imports backwards-compatible via shims if needed; no new dependencies
-**Validate:** `pytest -q` after each change
+**Validate:** run relevant tests during the migration; run `pytest -q` before declaring done
 **Checkpoints:** work in checkpoints; log progress briefly
 **Stop when:** full suite passes with zero deprecation warnings, OR when a change requires architecture decisions
 ```
@@ -84,76 +74,52 @@ When the user wants a quick `/goal` instruction, produce a structured markdown b
 
 ### Writing rules
 - **One objective, one stop condition.** Not a backlog.
-- **Documentation is mandatory.** Every `/goal` prompt must include a single sentence committing the agent to concise, targeted docs — new `.md` files or focused updates to existing docs.
+- Update docs when behavior, setup, or usage needs explaining, or the task requires it.
+- Match checks to the change and final acceptance criteria; do not require the full suite after every edit.
 - **Never instruct the agent to create new ADRs** — ADRs require the user's explicit approval, so goal prompts must not pre-approve or encourage them.
-- **Forbid reward-hacking explicitly:** "Do not delete, skip, weaken, or narrow tests to make the goal pass." Otherwise the agent may game the stop condition.
-- **4,000-char limit** on the objective. If longer, put detail in a file (`PLAN.md`/`GOAL_BRIEF.md`) and make the goal point to it — keep the goal itself compact.
-- Use **literal strings** for paths, commands, issue numbers — exact.
+- **Forbid reward-hacking:** "Do not delete, skip, weaken, or narrow tests to make the goal pass."
+- Respect the runtime's length limit. Link longer detail in `PLAN.md`/`GOAL_BRIEF.md`.
+- Use exact paths, commands, and issue numbers.
 - Forbid scope creep explicitly: "Do not refactor unrelated code. Do not add dependencies."
 - Tell the agent when to pause: "If <condition>, pause and ask before proceeding."
-- Short, vague goals burn tokens for no extra value vs. a normal prompt.
 
-### Meta-prompting trick (highest-leverage)
+### Draft with another agent
 
-Hand-written goals under-specify. Ask a second AI session (Claude with the codebase loaded, ChatGPT with project connected, or a separate agent thread in the same dir) to: (1) inspect the codebase, (2) surface hidden assumptions/constraints/edge cases, (3) emit a structured `/goal` markdown block using the 4-part contract. Paste that into the agent. Order-of-magnitude better runs.
+Give a second AI session access to the codebase. Ask it to inspect the code, surface assumptions, constraints, and edge cases, then produce the structured 4-part contract. Paste that contract into the goal agent.
 
 Claude Code cmux note: after Claude finishes, it may prefill a predicted next user message; that draft is Claude, not the user speaking.
 
 ### Self-goal setting
 
-The agent can now write and set its own goal natively (the `create_goal` tool). Instead of crafting the contract yourself, give it your high-level intent and tell it to set the goal: "Inspect this repo, then write yourself a `/goal` with a verifiable stop condition and pursue it." It's the meta-prompting trick done inline — the agent turns your intent into the contract. Still give it the same raw materials (files to read, constraints, the validation command) so the goal it writes is grounded. Add: "ask clarifying questions before committing if the intent is underspecified" — catches ambiguity up front and prevents the self-set goal from drifting.
+Use a supported goal-creation tool such as `create_goal` only when the user explicitly asks to set a goal. He can give high-level intent: "Inspect this repo, then write yourself a `/goal` with a verifiable stop condition and pursue it." Supply files to read, constraints, and the validation command. If intent is underspecified, ask clarifying questions before setting the goal.
 
-## Launching
+## Launching and controlling a goal
 
-1. `cd <repo>` (goals run scoped to the working directory).
-2. Launch the agent bare (opens the TUI). **Not** exec/headless mode — `/goal` is a TUI slash command only.
-3. Sign in with subscription auth (not an API key).
-4. Type `/goal <your contract>` in the composer, Enter.
-5. Walk away.
+1. Identify the agent, version, interface, and intended working directory or session.
+2. Check its supported goal commands/tools and any setup or authentication requirements.
+3. Start the goal using that runtime's supported interface and the agreed contract.
+4. Verify it is active and know how to inspect, pause/stop, and resume it.
 
-## Controlling a running goal
-
-| Command | Effect |
-|---|---|
-| `/goal` (alone) | Status: current checkpoint, what's verified, what remains, blockers |
-| `/goal pause` | Freeze |
-| `/goal resume` | Unfreeze (paused goals never auto-resume) |
-| `/goal clear` | Kill the goal |
-| `/goal <new>` | Replace the current goal |
-| Ctrl+C / any typed message | Auto-pauses; user input always wins priority |
-
-Resuming across sessions: goal state is persisted server-side. `cd` back into the repo, launch the agent, `/goal` for status, `/goal resume`.
-
-Budget-limited state: the agent doesn't stop abruptly — it summarizes, notes what's left, saves state. `/goal resume` works after budget refresh or upgrade.
+Before resuming across sessions, verify where that runtime stores goal state and which session must be reopened. Do not assume server-side persistence, automatic pause on user input, replacement semantics, or resumption after a budget refresh.
 
 ## When a goal drifts
 
-- **Minor drift:** just type a correction in the composer (auto-pauses, folds it in, resumes).
-- **Loose objective:** `/goal pause`, read status, then `/goal <tighter version>` — replaces the contract. Don't pile instructions on a vague goal.
-- **Bad mess:** `/goal clear`, `git status` or `git stash`, rewrite with the meta-prompting trick, restart.
+- **Minor drift:** send a correction and check that the agent incorporates it.
+- **Loose objective:** use the runtime's supported pause/stop control, inspect status, then tighten the objective before resuming.
+- **Bad mess:** stop the goal, review the diff, and undo only changes identified as belonging to that run. Preserve the user's and other agents' work; do not use a blanket reset or stash. Rewrite the goal before restarting.
 
-Don't let a drifting goal keep running "to see where it goes." Tokens burn, diffs compound.
+Correct or stop drift promptly.
 
 ## Operational tips
 
-- Inspect status periodically with bare `/goal`.
-- **Always review the diff** before merging — long autonomy means more code to validate, not less. Human oversight becomes more critical, not optional.
+- Inspect status periodically with the runtime's supported command or tool. Every monitoring check must include a concise one-line update to the user: what the agent is doing and whether it is on track.
+- **Always review the diff before merging.** Human oversight remains essential.
 - Keep approvals/sandboxing tight; default permissions are correct.
-- First run: pick a 30-min scoped task so you learn how `/goal` actually stops before trusting it overnight.
+- Start with a small task to learn how the runtime stops before an overnight run.
 - Bake recurring policy into `AGENTS.md` so every goal inherits it without restating: adversarial self-review before declaring done, an extra QA pass even when tests pass, and the standard validation command. Saves repeating it in each goal paragraph.
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `/goal` missing from slash popup | Update the agent to a version that supports `/goal` |
-| Feature flag on but command missing | Quit and restart the agent fully |
-| Typed `/goals` | It's singular: `/goal` |
-| Doesn't activate | Sign out, sign back in with subscription auth (not API key) |
-| Stopped with progress summary | Budget-limited — `/goal resume` after refresh, or tighten scope |
-| `/goal resume` says no active goal | Terminal state or cleared — start fresh with `/goal <new>` |
-| Goal looks active but won't auto-continue | Stuck in Plan mode — plan-only work doesn't trigger continuation. Draft the plan, then switch to Goal execution |
-
-## Mental model
-
-`/goal` is a **contract enforcer with a verification loop**, not a "run forever" button. The shift: stop writing prompts, start writing **specifications with stop conditions**. Spend the time upfront defining "done"; the run takes care of itself.
+- **Missing goal command:** check support and setup for the installed agent and interface before suggesting updates or configuration changes.
+- **Will not start or continue:** inspect the actual error, goal status, authentication, and limits. Use that runtime's documented recovery steps.
+- **No saved goal:** verify the session and persistence behavior before creating a replacement.

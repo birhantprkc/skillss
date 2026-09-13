@@ -48,6 +48,12 @@ except urllib.error.HTTPError as error:
 
 Python's standard library worked in our tests. Use the official TypeScript or Python SDK when the surrounding application benefits from typed clients; do not introduce a client abstraction just to make a few requests.
 
+## Preserve the user’s scope
+
+- Pass the user’s task instructions verbatim, including constraints and corrections.
+- Add only essential execution context, such as repository, machine, or file paths. Keep it separate.
+- Never invent requirements, extra deliverables, permissions, or claims of the user’s approval.
+
 ## Environments and templates
 
 An **environment** holds repositories, secrets, and credential permissions. A **named snapshot/template** holds installed tools and disk state. Use both for repeatable startup.

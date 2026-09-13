@@ -89,6 +89,12 @@ Use `--new-environment worktree` for a bb-managed worktree. Do not create one ma
 
 ## Task Brief
 
+**Preserve the user’s scope**
+
+- Pass the user’s task instructions verbatim, including constraints and corrections.
+- Add only essential execution context, such as repository, machine, or file paths. Keep it separate.
+- Never invent requirements, extra deliverables, permissions, or claims of the user’s approval.
+
 The worker does not see this conversation. State the objective, constraints, relevant skills/files, deliverable, validation, and expected report. Name the skills it must read rather than assuming your context carries over.
 
 For read-only jobs, explicitly say **no code changes, no Git writes, no database writes**. For implementation, specify the allowed scope and any Git or production restrictions. Ask for a concise report, including changed files and validation when relevant.

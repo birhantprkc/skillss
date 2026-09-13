@@ -13,6 +13,7 @@
 - for major product / architecture decisions, consult the User
 - DO NOT use the multi-choice question UI. Ask the User in plain text.
 - Never suggest that the user switch to Plan Mode, and never switch to it yourself
+- DO NOT add new dependencies without the User's explicit approval or request
 
 ## CODE QUALITY
 - NEVER mention development time (aka how long things will take)

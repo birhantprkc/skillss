@@ -14,8 +14,8 @@ Use DeepAPI (`POST /v1/research/deep`) for all deep research.
 Read your DeepAPI API key from the environment. Never source `~/.zshrc`; it breaks the shell (exit 126).
 
 ```bash
-KEY=${YOUR_API_KEY}
-BASE=${API_BASE_URL:-https://deepapi.co}
+KEY="<your-DeepAPI-API-key>"
+BASE=https://deepapi.co
 ```
 
 If the key is missing, stop and ask the user. Never print or log it. Get a key at deepapi.co.

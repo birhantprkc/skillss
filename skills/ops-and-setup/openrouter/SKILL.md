@@ -1,6 +1,6 @@
 ---
 name: openrouter
-description: 'Configure, build, debug, and optimize any integration with the OpenRouter API. Use whenever choosing OpenRouter models or fallbacks, setting reasoning effort or token limits, routing providers, attaching images, using tools or structured output, or investigating cost, latency, streaming, and API failures. Applies across apps, scripts, SDKs, agents, and pipelines.'
+description: 'Design, build, debug, and optimize OpenRouter API integrations. Use for any OpenRouter API work, including models, reasoning, routing, media, tools, structured output, cost, or performance.'
 ---
 
 # OpenRouter

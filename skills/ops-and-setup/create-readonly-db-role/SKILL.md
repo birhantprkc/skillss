@@ -1,33 +1,30 @@
 ---
 name: create-readonly-db-role
-description: 'Provision a hardened SELECT-only Postgres role so AI agents can safely read a production database. Works on Supabase and any Postgres. Use when the user wants agents to query prod data, says "read-only role", "safe prod DB access for agents", or is tired of running SQL by hand for agents. Differentiator: this skill CREATES the role and wiring; day-to-day querying belongs in a project-local skill.'
+description: Set up read-only PostgreSQL access for agents. Use only when the user explicitly invokes /create-readonly-db-role.
 disable-model-invocation: true
-triggers: [user, model]
 ---
 
 # Create a Read-Only DB Role for Agents
 
-A pattern used at DeepAPI. A SELECT-only role kills catastrophic writes at the permission level. Residual risks (data leaks, heavy queries) are handled by a denylist and timeouts. Agents stop being blind on prod; the human stops being the SQL bottleneck.
+Prepare a SELECT-only role and protected connection. The SQL, role name, grants, denylist, RLS setting, timeouts, and connection steps are examples to adapt to your system, not live production configuration.
 
-The SQL, timeouts, grants, denylist, RLS setting, role name, and connection steps below are customizable examples for your own system. Adapt them. They are not a copy of any live production setup.
+## Access model
 
-## The pattern — 3 layers
+1. **SELECT-only grants.** Grant no write permissions; use a denylist to exclude secrets and PII.
+2. **Current and future tables.** Grant SELECT on all tables in `public`, including future tables through default privileges, then revoke denylisted tables. Never grant the `auth` schema. New sensitive tables need a manual revoke.
+3. **Soft guardrails.** Set `default_transaction_read_only = on` and a short `statement_timeout` suited to the workload.
 
-1. **Hard wall — grants.** The role gets SELECT and nothing else. Writes are impossible, not just discouraged.
-2. **Denylist, not allowlist.** Grant SELECT on ALL current + future tables in `public` (via default privileges), then revoke tables that hold secrets or PII. Never grant the `auth` schema. Future tables are auto-readable by design; new sensitive tables need a manual revoke.
-3. **Soft guardrails.** Example: `default_transaction_read_only = on` plus a short `statement_timeout`. Tune both for your workload.
-
-**RLS trap:** if tables have Row Level Security and no policy mentions the new role, every SELECT returns 0 rows. One common fix is `alter role ... bypassrls` — this only skips row filtering. The SELECT-only grants and denylist still apply. Use it only if it fits your security model.
+**RLS:** tables may return no rows when the role has no applicable policy. Consider `bypassrls` only if it fits your security model: it skips row filtering, while grants and the denylist still apply.
 
 ## Workflow
 
-1. **State-check.** `select rolname from pg_roles where rolname = 'agent_reader';` — if it exists, you are updating, not creating. Replace `agent_reader` with the role name you choose.
-2. **Pick the denylist with the human.** Ask which tables hold secrets or PII that agents must never see (credentials, webhook payloads, identity tables).
-3. **Write the SQL to a repo file first** (e.g. `docs/database/create-agent-reader-role.sql`) with comments: what / why / how to apply / how to verify / how to revert. Never hand SQL only in chat.
-4. **The human applies it** — agents never run DDL on prod. Supabase: paste the whole file into the SQL editor, then DELETE the query from editor history (it contains the password). Store the password in a password manager.
-5. **Wire the connection string** through a protected secret manager or local environment configuration. Never commit it. For a Supabase session pooler, the username is typically `<role>.<project-ref>` on port 5432. Install `psql` from your package manager (Homebrew `libpq` on macOS) if it is missing.
-6. **Verify** with the loop below.
-7. **Write a project-local usage skill** so future agents know the key tables, query patterns, and hard rules (read-only forever, never paste PII into commits/docs).
+1. **Check the role:** `select rolname from pg_roles where rolname = 'agent_reader';`. Use your chosen name; if it exists, update rather than recreate it.
+2. **Agree on the denylist with the human.** Identify secret or PII tables agents must never see, such as credentials, webhook payloads, and identity tables.
+3. **Save SQL in the repo**, e.g. `docs/database/create-agent-reader-role.sql`. Comment what changes, why, and how to apply, verify, and revert. Chat-only SQL is insufficient.
+4. **The human applies it. Agents never run production DDL.** In Supabase, paste the file into the SQL editor, then delete the query from its history because it contains the password. The human stores the password in a password manager.
+5. **Wire the connection** through a protected secret manager or local environment configuration; never commit it. Supabase session poolers typically use `<role>.<project-ref>` on port 5432. Install `psql` if missing (Homebrew `libpq` on macOS).
+6. **Run every verification check below.**
+7. **Create a project-local usage skill** covering key tables, query patterns, read-only access, and never pasting PII into commits or docs.
 
 ## SQL template
 
@@ -55,7 +52,9 @@ alter role agent_reader bypassrls;
 
 Revert: `drop owned by agent_reader; drop role agent_reader;`
 
-## Verification loop (all must pass before declaring done)
+## Verification
+
+All checks must pass before declaring done:
 
 ```bash
 # Load the connection URL from your secret manager or local environment configuration.
@@ -70,17 +69,14 @@ psql "<readonly-connection-url>" -X -c "select * from public.<denylisted> limit 
 psql "<readonly-connection-url>" -X -c "select * from auth.<identity_table> limit 1;"       # -> ERROR: permission denied
 ```
 
-Writes must be blocked **twice over**: once by the read-only guardrail, and again by `permission denied` with the guardrail off. If any check fails, fix the grants and re-run ALL checks.
+Verify both protections: writes fail under the read-only guardrail, and fail with `permission denied` when it is off. If any check fails, correct the configuration through the human and rerun all checks.
 
-## Failure modes
+## Troubleshooting and maintenance
 
-- **Every table returns 0 rows** → RLS is enabled and the role has no policy → consider `bypassrls` (step 4 of template) only if it fits your model.
-- **A write succeeded during verification** → grants are wrong. Stop, revoke everything, re-run the template.
-- **Supabase auth failed** → pooler username is usually `<role>.<project-ref>`, not the bare role name.
-- **`statement timeout` on legit queries** → query too heavy; add filters/limits. Do not raise the timeout as a first resort.
-
-## Maintenance
-
-- New sensitive table → add a `revoke select` next to the denylist block.
-- Rotate password: `alter role agent_reader with password '...'` then update the secret in your secret manager or local environment configuration.
-- Never let agents write through this role. Prod writes stay human-only.
+- **No rows across tables:** check RLS policies; use `bypassrls` only if appropriate.
+- **Write verification succeeds:** stop. Have the human revoke the role's privileges and correct the setup, then rerun all checks.
+- **Supabase authentication fails:** check the pooler username, usually `<role>.<project-ref>`.
+- **Legitimate query times out:** add filters or limits before raising the timeout.
+- **New sensitive table:** add `revoke select` to the denylist.
+- **Password rotation:** have the human run `alter role agent_reader with password '...'` and update the stored connection secret.
+- Never allow agents to write through this role. Production writes remain human-only.

@@ -1,6 +1,7 @@
 ---
 name: fireflies-transcript
-description: 'Pull raw meeting transcripts from the user''s Fireflies.ai notetaker via its GraphQL API, using the key saved globally on this MacBook. Use when the user wants a call transcript, meeting notes, "what was said on the call", onboarding-call transcripts, or Fireflies data. Differentiator: Fireflies meeting recordings only — for YouTube videos use youtube-transcript.'
+description: Fetch raw Fireflies.ai meeting transcripts. Use only when the user explicitly invokes /fireflies-transcript; for YouTube, use youtube-transcript.
+disable-model-invocation: true
 ---
 
 # Fireflies Transcript

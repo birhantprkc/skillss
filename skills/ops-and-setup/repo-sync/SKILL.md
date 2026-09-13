@@ -1,17 +1,18 @@
 ---
 name: repo-sync
-description: Manage repo-sync on macOS for shared documents and team context. Use when asked what repo-sync does, to automatically sync a repo, add a repo to repo-sync, stop syncing or un-sync a repo, check sync health, configure repo-sync, uninstall it, or install and maintain its bundled agent skill. Ordinary one-time Git pulls and pushes do not need this skill.
+description: Manage automatic Git syncing on macOS with repo-sync. Use only when the user explicitly invokes /repo-sync.
+disable-model-invocation: true
 ---
 
 # repo-sync
 
 ## What it does
 
-repo-sync keeps shared Git repos in sync on macOS. It is for team documents, notes, skills, and context. Complex software projects and pull request workflows are outside its intended scope.
+Sync shared Git repos for team documents, notes, skills, and context on macOS. Complex software projects and pull request workflows are outside scope.
 
-By default, after 60 seconds without local edits, it commits eligible non-ignored changes, rebases on the remote, and pushes. This includes staged edits, renames, and deletions. It checks remote changes every 60 seconds, starts at login, and runs without an AI agent.
+By default, after 60 seconds without local edits, repo-sync commits eligible non-ignored changes (including staged edits, renames, and deletions), rebases, and pushes. It checks remote changes every 60 seconds and starts at login without an AI agent.
 
-Only the remote's default branch syncs (`origin/HEAD`, with `main` as fallback). Feature branches and detached HEAD are skipped. It never switches branches.
+Only the remote's default branch syncs (`origin/HEAD`, falling back to `main`). Feature branches and detached HEAD are skipped; branches are never switched.
 
 ## Check first
 
@@ -20,15 +21,15 @@ command -v repo-sync
 repo-sync help
 ```
 
-Use the installed help as the command contract. Older binaries may lack `skill`, `remove`, `status`, or `version`. Run `repo-sync version` when listed. Installing this skill does not install or upgrade the binary.
+Installed help is the command contract. Older binaries may lack `skill`, `remove`, `status`, or `version`; run `repo-sync version` when listed. Installing the skill does not install or upgrade the binary.
 
-The default config is `~/Library/Application Support/repo-sync/config.json`. Check the installed service's `ProgramArguments` in `~/Library/LaunchAgents/com.vectal-labs.repo-sync.plist` for a custom path. Use that config throughout. Put flags before positional arguments.
+Default config: `~/Library/Application Support/repo-sync/config.json`. Check `ProgramArguments` in `~/Library/LaunchAgents/com.vectal-labs.repo-sync.plist` for a custom path and use the selected config throughout. Flags precede positional arguments.
 
 Read [references/operations.md](references/operations.md) for custom settings, unsupported commands, legacy removal, upgrades, or failed checks.
 
 ## Start syncing
 
-A request to sync a named repo authorizes its automatic commits and pushes. Briefly explain that staged changes are included. Use existing authorization without asking again.
+A request to sync a named repo authorizes automatic commits and pushes. Mention that staged changes are included; do not ask again when already authorized.
 
 For a fresh installation:
 
@@ -38,7 +39,7 @@ repo-sync setup
 repo-sync status
 ```
 
-Homebrew installs Git and GitHub CLI. Setup checks Git identity and access, lets you choose repos, and verifies the service. Select only repos within the request. Repeating setup keeps existing registrations. Homebrew itself must already be available.
+Homebrew must already be available; it installs Git and GitHub CLI. Setup checks identity/access and service health, and preserves existing registrations. Select only requested repos.
 
 For an existing local clone:
 
@@ -47,7 +48,7 @@ repo-sync add "/absolute/path/to/notes"
 repo-sync status
 ```
 
-`add` without a path uses the current repo. The clone needs an `origin` remote. If the request names a remote repo and asks for a local clone, check the destination, clone it there, then add it. Do not overwrite folders, create remote repositories, or change remotes unless authorized.
+`add` defaults to the current repo, which needs an `origin` remote. When asked to clone a remote repo, check the destination, clone, then add it. Do not overwrite folders, create remote repos, or change remotes without authorization.
 
 For a custom config:
 
@@ -56,7 +57,7 @@ repo-sync add --config "/absolute/path/to/config.json" "/absolute/path/to/notes"
 repo-sync status --config "/absolute/path/to/config.json"
 ```
 
-`add` can save a registration even when the service restart fails. Verify fresh status. If setup is needed, run it with the same config. Report registration and active syncing separately when readiness fails.
+`add` may save registration despite restart failure. Check fresh status; if setup is needed, use the same config. Report registration separately from active syncing when readiness fails.
 
 ## Stop syncing one repo
 
@@ -72,30 +73,30 @@ repo-sync remove --config "/absolute/path/to/config.json" "/absolute/path/to/not
 repo-sync status --config "/absolute/path/to/config.json"
 ```
 
-Without a path, `remove` uses the current repo. For a missing or moved folder, use its old configured absolute path.
+`remove` defaults to the current repo. For missing or moved folders, use the old configured absolute path.
 
-Removal unregisters the repo and restarts the matching installed service. Files, Git history, and local work remain. A Git operation already in progress may finish during shutdown. Removal does not erase anything already pushed or stop syncing on teammates' machines.
+Removal unregisters the repo and restarts the matching service. Files, history, local work, and pushed data remain; teammates' syncing is unaffected. In-progress Git operations may finish during shutdown.
 
-Verify that the registration is absent and the service applied the change. Removing the last repo leaves the service running with no repos. If no background service is running, removal only updates the config; manually started `repo-sync run` processes still need restarting.
+Verify registration is absent and the service applied the change. Removing the last repo leaves an empty running service. With no background service, only config changes; manually started `repo-sync run` processes still need restarting.
 
-If help lacks `remove`, follow **Legacy removal** in the reference. Do not substitute uninstall or delete the clone.
+Without `remove`, follow **Legacy removal** in the reference. Do not uninstall or delete the clone instead.
 
 ## Install or maintain this skill
 
-When help lists `skill`, the binary includes this skill and its references. Use `repo-sync skill install`, then `repo-sync skill status`. No source checkout or download is needed. Setup also offers installation. Start a new agent session afterward.
+When help lists `skill`, use `repo-sync skill install`, then `repo-sync skill status`. The binary bundles the skill and references; no checkout or download is needed. Setup also offers installation. Start a new agent session afterward.
 
-Homebrew upgrades refresh managed, unchanged copies. After a Go upgrade, rerun setup or `repo-sync skill refresh`. `repo-sync skill uninstall` removes unchanged managed copies while keeping the program and syncing service. Customized folders remain. See **Agent skill installation** in the reference for destinations and conflicts.
+Homebrew upgrades refresh unchanged managed copies. After Go upgrades, rerun setup or `repo-sync skill refresh`. `repo-sync skill uninstall` removes unchanged managed copies, preserving customized folders, the program, and syncing service. See **Agent skill installation** in the reference for destinations and conflicts.
 
 ## Uninstall everything
 
-Use `repo-sync uninstall` only when the user requests uninstalling repo-sync. It removes the service, settings, logs, cache, program, and unchanged managed skill copies after confirmation. Customized skill folders remain. Repositories, Git history, and shared Git credentials remain. `--keep-binary` keeps the program; `--yes` skips the CLI prompt when already authorized.
+Run `repo-sync uninstall` only on request. After confirmation, it removes the service, settings, logs, cache, program, and unchanged managed skills. Customized skills, repositories, Git history, and shared Git credentials remain. `--keep-binary` retains the program; `--yes` skips the prompt when already authorized.
 
 ## Safety and verification
 
-- Secrets are blocked by filename, including `.env`, private keys, and `.npmrc`. Contents are not scanned; ordinary filenames can still contain secrets. Blocked staged files can be unstaged by normal syncing.
+- Filename protection blocks names such as `.env`, private keys, and `.npmrc`, but does not scan contents; ordinary filenames can hide secrets. Normal syncing can unstage blocked files.
 - Use `repo-sync allow` only when publishing that file is explicitly authorized.
-- Conflicts keep local commits, abort repo-sync's own rebase, and retry. There is no automatic conflict resolution or force-push. One failing repo does not block the others.
+- Conflicts preserve local commits, abort repo-sync's own rebase, and retry. No automatic conflict resolution or force-push; one failing repo does not block others.
 - Do not reset history, switch branches, delete lock files, or override secret protection just to clear an error.
 - There is no `pause`, `resume`, or `sync now` command. Check help before using any command.
-- Check exit codes and fresh status. A running service can still have repo failures. Do not create verification commits or push test files into the user's repos without authorization.
-- Report the repo, action, verification result, and any remaining failure in a few short sentences.
+- Check exit codes and fresh status; a running service can still have repo failures. Do not create verification commits or push test files without authorization.
+- Briefly report the repo, action, verification, and remaining failures.

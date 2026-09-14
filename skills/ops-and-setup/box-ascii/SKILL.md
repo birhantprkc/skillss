@@ -48,11 +48,11 @@ except urllib.error.HTTPError as error:
 
 Python's standard library worked in our tests. Use the official TypeScript or Python SDK when the surrounding application benefits from typed clients; do not introduce a client abstraction just to make a few requests.
 
-## Preserve the user’s scope
+## Preserve the user's scope
 
-- Pass the user’s task instructions verbatim, including constraints and corrections.
-- Add only essential execution context, such as repository, machine, or file paths. Keep it separate.
-- Never invent requirements, extra deliverables, permissions, or claims of the user’s approval.
+- Write a focused assignment preserving intent, constraints, and corrections. Never invent requirements, deliverables, permissions, or approval.
+- Model, machine, repository, and thread placement guide the launcher. Give each worker only its task and necessary context.
+- Before sending, remove copied conversation, launcher instructions, and unrelated assignments. Never prepend the full user prompt; quote exact wording only when explicitly requested.
 
 ## Environments and templates
 

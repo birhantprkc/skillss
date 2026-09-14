@@ -91,9 +91,9 @@ Use `--new-environment worktree` for a bb-managed worktree. Do not create one ma
 
 **Preserve the user’s scope**
 
-- Pass the user’s task instructions verbatim, including constraints and corrections.
-- Add only essential execution context, such as repository, machine, or file paths. Keep it separate.
-- Never invent requirements, extra deliverables, permissions, or claims of the user’s approval.
+- Write a focused assignment preserving intent, constraints, and corrections. Never invent requirements, deliverables, permissions, or approval.
+- Model, machine, repository, and thread placement guide the launcher. Give each worker only its task and necessary context.
+- Before sending, remove copied conversation, launcher instructions, and unrelated assignments. Never prepend the full user prompt; quote exact wording only when explicitly requested.
 
 The worker does not see this conversation. State the objective, constraints, relevant skills/files, deliverable, validation, and expected report. Name the skills it must read rather than assuming your context carries over.
 

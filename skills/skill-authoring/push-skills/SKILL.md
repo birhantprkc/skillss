@@ -5,7 +5,7 @@ description: Commit and push changes to the user's skills repo, including global
 
 # Push Skills
 
-The canonical repo is `~/.agents`, with private remote `<private-skills-repo>`. Pushes to `main` trigger the sanitized public mirror at `davidondrej/skills`. Only the pipeline pushes to the public repo.
+The canonical repo is `~/.agents`, with private remote `<private-skills-repo>`. Pushes to `main` trigger the sanitized public mirror at `<public-skills-repo>`. Only the pipeline pushes to the public repo.
 
 Only commit or push when the user requests it. Editing this skill is not permission to publish it. For distributed skill edits, follow `distribute-skill-to-all-agents` before pushing.
 
@@ -67,20 +67,20 @@ If the push is rejected because `main` advanced, fetch and rebase the isolated i
 A private push alone does not prove publication. Find the workflow for the pushed commit:
 
 ```bash
-gh run list --repo <private-skills-repo> --workflow public-mirror.yml \
+gh run list --repo <private-skills-repo> --workflow <mirror-workflow> \
   --commit "$source_sha" --json databaseId,headSha,status,conclusion,url
 gh run watch <run-id> --repo <private-skills-repo> --exit-status
 ```
 
-Wait for that run, not an older successful run. If a newer run supersedes it, confirm that run's source contains the intended change. The workflow can add a DeepAPI sync commit, so the public commit's `Source:` may name a descendant of your pushed commit. If the run fails, is cancelled without replacement, or remains stalled, inspect its status/logs and report publication incomplete with the run link. Do not rerun indefinitely.
+Wait for that run, not an older successful run. If a newer run supersedes it, confirm that run's source contains the intended change. If the run fails, is cancelled without replacement, or remains stalled, inspect its status/logs and report publication incomplete with the run link. Do not rerun indefinitely.
 
 Read the actual published file and confirm the intended update:
 
 ```bash
-gh api repos/davidondrej/skills/contents/AGENTS.md \
+gh api repos/<public-skills-repo>/contents/AGENTS.md \
   -H 'Accept: application/vnd.github.raw'
 ```
 
 For skills, check `skills/<category>/<skill-name>/SKILL.md`; use the committed policy and published tree to find the category. Private-only skills need only private push verification.
 
-The mirror may rewrite or omit content. A green workflow and an existing file are not enough: inspect the content. For missing or unexpected output, inspect that run's `public-mirror-report` artifact and `~/.agents/tools/public_mirror/README.md`. Report exclusions or failures accurately; do not bypass the sanitizer or add manual approval gates. Finish with the private commit, workflow result, and public file link when published.
+The mirror may rewrite or omit content. A green workflow and an existing file are not enough: inspect the content. For missing or unexpected output, inspect that run's report artifact and the mirror tooling docs. Report exclusions or failures accurately; do not bypass the sanitizer or add manual approval gates. Finish with the private commit, workflow result, and public file link when published.

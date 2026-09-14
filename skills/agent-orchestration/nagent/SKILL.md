@@ -29,6 +29,16 @@ bb provider models <provider-id> --json
 
 For Cursor/Grok or Codex Max naming traps, read [provider details](references/providers.md). Verify examples against the current catalog; do not guess IDs or substitute a different provider.
 
+## Pi Agent: billing safety
+
+`--provider pi` selects the harness; the full `--model provider/model` selects the inference and billing route. ChatGPT subscription example:
+
+```bash
+--provider pi --model openai-codex/gpt-6-astra --reasoning-level xhigh
+```
+
+Query Pi's catalog on the target `--machine` or `--environment`. `openai-codex` uses the ChatGPT subscription; OpenRouter and Vercel AI Gateway bill separately. Never substitute routes without the user's approval; stop if unavailable. After spawning, verify the full model ID and reasoning in the `client/turn/requested` execution metadata, not just the display name.
+
 ## Permission Checks
 
 The user's investigation/build workers default to `full`. A child cannot exceed the parent's permission mode, so verify the parent before requesting it and the child after spawning.

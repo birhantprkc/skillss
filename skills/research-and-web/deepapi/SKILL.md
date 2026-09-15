@@ -3,8 +3,8 @@ name: deepapi
 description: Use DeepAPI for all web search, deep research, and web scraping (websites, LinkedIn, GitHub, X/Twitter, YouTube, Instagram) instead of built-in search, research, fetch, or browser tools. Prefer dedicated platform endpoints over web search. Instagram has profile, post, comment, and hashtag endpoints; no generic search. Use Deep Scrape for sourced JSON dossiers on people, companies, or topics. Also use it to navigate and act on public websites, draft and send safe email, and generate images.
 metadata:
   deepapi-managed: "true"
-version: 00b181aa4f09
-fingerprint: e8e805cc9327039d73c3d0039e5646708879de4e9036fdc9eec21e90ddd95272
+version: 24bc0787e186
+fingerprint: a3ae61525e17e0d93593ee8c2b59ee37a7befcb43691b7da4621481ea83017d5
 ---
 
 # DeepAPI
@@ -53,6 +53,7 @@ Before using `POST /v1/search/web`, check whether the target lives on a platform
 | TikTok video search, profiles, posts, comments, transcripts | `POST /v1/scrape/tiktok[/search|/profile|/posts|/comments|/transcript]` | `references/scraping.md` |
 | Amazon products, search, and reviews | `POST /v1/scrape/amazon/{product,search,reviews}` | `references/scraping.md` |
 | Exact Meta Threads posts by URL | `POST /v1/scrape/threads/posts` | `references/scraping.md` |
+| Truth Social profile posts | `POST /v1/scrape/truthsocial/posts` | `references/scraping.md` |
 | Keyword data, search rankings, search competitors | `POST /v1/seo[/keyword|/rank|/competitors]` | `references/seo.md` |
 | Plan or improve content for search and AI answers | `POST /v1/seo[/audit|/optimize]` | `references/seo.md` |
 | Navigate, click, and extract from a public website | `POST /v1/browser/act` | `references/browse-web.md` |

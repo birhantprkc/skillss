@@ -34,7 +34,7 @@ cmux reload-config      # reloads cmux and Ghostty settings
 - Terminal rendering (font, cursor, theme, scrollback, opacity, blur): `~/.config/ghostty/config`.
 - Schema: `https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json`.
 
-The user keeps both sidebar text previews off. Preserve these settings:
+Keep both sidebar text previews off. Preserve these settings:
 
 ```jsonc
 "sidebar": {
@@ -61,13 +61,13 @@ Session resume integrations include Claude Code, Codex, Grok, OpenCode, Pi, Amp,
 
 cmux terminals receive `CMUX_WORKSPACE_ID`, `CMUX_SURFACE_ID`, `CMUX_SOCKET_PATH`, and `CMUX_PORT`.
 
-Use the raw socket when subprocess overhead matters; otherwise prefer the CLI. Use v2 `id`/`method`/`params` requests; legacy `{\"command\":...}` is rejected.
+Use the raw socket when subprocess overhead matters; otherwise prefer the CLI. Use v2 `id`/`method`/`params` requests; legacy `{"command":...}` is rejected.
 
 Use `CMUX_SOCKET_PATH`; otherwise the CLI defaults to `~/.local/state/cmux/cmux.sock` and discovers tagged/debug sockets. `/tmp/cmux.sock` is legacy. Raw clients must target the intended instance.
 
 ```bash
 cmux_socket_path="${CMUX_SOCKET_PATH:-$HOME/.local/state/cmux/cmux.sock}"
-echo '{\"id\":\"1\",\"method\":\"workspace.list\",\"params\":{}}' | nc -U "$cmux_socket_path"
+echo '{"id":"1","method":"workspace.list","params":{}}' | nc -U "$cmux_socket_path"
 ```
 
 Method families: `system.*`, `window.*`, `workspace.*`, `pane.*`, `surface.*`, `notification.*`, `browser.*`. Full list: `cmux capabilities --json`; API docs: `cmux docs api`.

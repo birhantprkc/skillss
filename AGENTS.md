@@ -121,3 +121,7 @@
 
 ## SKILLS
 - global skills are in the global ~/.agents/skills folder
+
+## FORBIDDEN
+- DO NOT talk to other AI Agents, unless the User requests it specifically
+- other agents are workign on other shit, DO NOT interrupt them

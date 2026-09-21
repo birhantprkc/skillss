@@ -22,11 +22,11 @@ check() { # $1 = expected: block|allow, $2 = command string
     echo "FAIL [claude/codex] expected=$expected got=$verdict : $cmd"
   fi
 
-  # Cursor shape: .command, block = {\"permission\":\"deny\"}
+  # Cursor shape: .command, block = {"permission":"deny"}
   out=$(jq -cn --arg c "$cmd" '{command:$c,cwd:"/tmp"}' | "$GUARD" cursor 2>/dev/null)
   case "$out" in
-    *'\"deny\"'*) verdict="block" ;;
-    *'\"allow\"'*) verdict="allow" ;;
+    *'"deny"'*) verdict="block" ;;
+    *'"allow"'*) verdict="allow" ;;
     *) verdict="invalid-output" ;;
   esac
   if [ "$verdict" = "$expected" ]; then
@@ -76,7 +76,7 @@ check block 'git push origin :main'
 check block 'git push origin +main'
 check block 'gh repo delete example-owner/example-repo --yes'
 check block 'gh release delete v1.0 --yes --cleanup-tag'
-check block 'gh secret delete EXAMPLE_API_KEY'
+check block 'gh secret delete EXAMPLE_SECRET'
 check block 'gh ssh-key delete 123 --yes'
 check block 'gh gpg-key delete ABC123'
 check block 'gh api -X DELETE /repos/example-owner/example-repo'
@@ -110,7 +110,7 @@ check block 'cd /tmp && pass show prod/aws'
 check block 'echo ok; pass show prod/aws'
 check block 'true | pass insert prod/aws'
 check block '   pass show prod/aws'
-check block $'cd /tmp\\npass show prod/aws'
+check block $'cd /tmp\npass show prod/aws'
 check block 'op read op://Private/GitHub/token'
 check block 'op item get GitHub --fields password'
 check block 'op run -- printenv'
@@ -137,7 +137,7 @@ check allow 'rm -rf node_modules'
 check allow 'rm -rf dist/'
 check allow 'rm -rf /tmp/build-cache'
 check allow 'rm -rf ~/old-project'
-check allow 'rm -rf ~/example-project/tmp/test-dir'
+check allow 'rm -rf ~/code/DeepAPI/tmp/bash-guard'
 check allow 'rm package-lock.json'
 check allow 'sudo brew services restart postgresql'
 check allow 'sudo lsof -i :3000'
@@ -163,7 +163,7 @@ check allow 'gh repo clone example-owner/example-repo'
 check allow 'gh api /repos/example-owner/example-repo'
 check allow 'gh api -X POST /repos/x/y/issues -f title=bug'
 check allow 'gh release create v1.1 --notes "notes"'
-check allow 'gh secret set EXAMPLE_API_KEY --body abc'
+check allow 'gh secret set EXAMPLE_SECRET --body abc'
 check allow 'gh auth status'
 check allow 'gh repo edit example-owner/example-repo --description "new desc"'
 check allow 'gh issue close 12'

@@ -46,9 +46,8 @@ Source format: `<repo>, <agent and chat/session>, <YYYY-MM-DD>`.
 
 ```text
 N. Idea exactly as the user said it
-
-\tsource: <repo>, <agent and chat/session>, <date>
-\tany extra links or notes the user gave
+	source: <repo>, <agent and chat/session>, <date>
+	any extra links or notes the user gave
 ```
 
 **Startups, convictions, and mini projects:** indent all source and context lines with four spaces; use `- source:` and a blank line between entries:

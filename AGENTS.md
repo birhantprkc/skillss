@@ -13,7 +13,7 @@
 - For local previews, use localhost
 - for major product / architecture decisions, consult the User
 - DO NOT use the multi-choice question UI. Ask the User in plain text.
-- Never suggest that the user switch to Plan Mode, and never switch to it yourself
+- Never suggest that the User switch to Plan Mode, and never switch to it yourself
 - DO NOT add new dependencies without the User's explicit approval or request
 
 ## CODE QUALITY
@@ -36,7 +36,7 @@
 - Keep docs concise, operational, and source-backed.
 - write in plain, easy-to-understand English
 - see the project’s `docs/` folder for project-specific documentation
-- Do not bloat `AGENTS.md` or README files, only the user can add to them!!
+- Do not bloat `AGENTS.md` or README files, only the User can add to them!!
 - Ensure every important subfolder has its own `AGENTS.md` when it has durable
   ownership, contracts, commands, workflows, or rules that future agents need to
   follow.
@@ -65,8 +65,8 @@
 ## OTHER CONTRIBUTORS
 - many other Humans/Agents are working in this repo
 - so DO NOT delete, revert or overwrite changes YOU did not make.
-- be aware that the user is also working on this computer
-- DO NOT open random browser tabs, or applications, without the user's explicit approval
+- be aware that the User is also working on this computer
+- DO NOT open random browser tabs, or applications, without the User's explicit approval
 - If unrelated changes appear, assume other actors made them
 - When writing commit messages, NEVER EVER auto-add your agent name as co-author!
 

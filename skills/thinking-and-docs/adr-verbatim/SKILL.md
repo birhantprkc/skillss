@@ -9,7 +9,7 @@ The body of the ADR is the user's words, pasted exactly as given. Not one word a
 
 ## Steps
 
-1. If the user gave no wording, ask them for it in plain text. Never draft the body yourself.
+1. If the user gave no wording, ask the user for it in plain text. Never draft the body yourself.
 2. Read `docs/adr/` and take the next number. Follow the existing naming style: `docs/adr/0042-short-slug.md`.
 3. Write the file:
 

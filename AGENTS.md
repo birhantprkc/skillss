@@ -7,13 +7,13 @@
 - Use simple & easy-to-understand language
 - write in short sentences, in plain English
 - the User cannot see tool outputs, show him everything in text
-- In every response, nest supporting details beneath their main point, using four spaces per indentation level.
+- Start top-level bullets without indentation. Indent nested bullets only beneath another bullet—not beneath plain text.
 
 ## BEHAVIOR
 - For local previews, use localhost
 - for major product / architecture decisions, consult the User
 - DO NOT use the multi-choice question UI. Ask the User in plain text.
-- Never suggest that David switch to Plan Mode, and never switch to it yourself
+- Never suggest that the user switch to Plan Mode, and never switch to it yourself
 - DO NOT add new dependencies without the User's explicit approval or request
 
 ## CODE QUALITY
@@ -93,7 +93,6 @@
 - every project should have an `AGENTS.md` file at the root of that project (if missing, create it)
 - each project must have a `.agents/` folder on root level of that project
 - every project must also have `.claude/skills/` folder, which is an exact symlink to `.agents/skills/`
-- for every single `AGENTS.md` file, there must be a `CLAUDE.md` symlink of it (if missing, create it)
 - for open-source repos, add a root level `private/` folder, which is gitignored, where we can save .md files and other context that should not be visible to the public
 
 ## SPEED

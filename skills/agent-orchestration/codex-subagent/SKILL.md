@@ -1,6 +1,6 @@
 ---
 name: codex-subagent
-description: Launch OpenAI Codex CLI as a subagent (ChatGPT subscription auth, no API key). Use when delegating a self-contained coding task to Codex from another agent — parallel implementation work, a second opinion, or an independent verification pass.
+description: Launch OpenAI Codex CLI as a subagent (ChatGPT sign-in, no API key). Use when delegating a self-contained coding task to Codex from another agent — parallel implementation work, a second opinion, or an independent verification pass.
 disable-model-invocation: true
 ---
 
@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Codex CLI is OpenAI's terminal coding agent. `codex exec` runs it non-interactively:
 it works autonomously in a sandbox, streams progress to stderr, and prints only the
-final message to stdout. Auth reuses the user's ChatGPT subscription — never an API key.
+final message to stdout. Auth uses ChatGPT sign-in — never an API key.
 
 ## When to delegate
 
@@ -85,7 +85,7 @@ codex exec --cd /tmp/wt-taskA --model gpt-5.6-sol \
 
 - Hangs forever with no output → stdin was left open. Kill it, relaunch with `</dev/null`.
 - `codex login status` non-zero → the user must run `codex login`. Don't work around it.
-- ChatGPT plan rate limit hit → report to the user; never retry in a loop.
+- Rate limit hit → report to the user; never retry in a loop.
 - "Not a git repo" error → add `--skip-git-repo-check`, or init a repo first.
 - Network is blocked inside the workspace-write sandbox by default. If the task
   needs it (installs, API calls): `-c sandbox_workspace_write.network_access=true`.

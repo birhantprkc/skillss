@@ -13,7 +13,7 @@ Background reference: `library/claude-code/claude-and-agents-md.md`.
 ## Process
 
 ### Step 1: Confirm the target folder + sanity-check it deserves a file
-Ask the user which folder. Use absolute path under `~/workspace/`.
+Ask the user which folder. Use an absolute path under `<workspace-root>/`.
 
 **Only create a file if the folder has context needed across multiple sessions** — active evolving work, specific conventions, ongoing decisions. A folder of static reference files does NOT need one (agents can read on demand). If unsure, ask the user.
 
@@ -40,7 +40,7 @@ Before writing the file, give the user a bullet list grouped by section — let 
 ### Step 4: Iterate with the user
 - Keep answers short. The user will edit directly in the IDE.
 - When the user edits the file, RE-READ it and flag: contradictions, typos, missing rules, wrong categorization.
-- Do not revert the user's edits unless asked.
+- Do not revert their edits unless asked.
 
 ### Step 5: Write the file
 - Path: `<folder>/CLAUDE.md`
@@ -58,7 +58,7 @@ cd <folder> && ln -s CLAUDE.md AGENTS.md
 Verify with `ls -la CLAUDE.md AGENTS.md`.
 
 ### Step 7: Commit only when asked
-Do NOT stage or push unless the user says to. When the user does: `git add -A`, commit with a `Day N:` style message, push.
+Do NOT stage or push unless the user says to. When they do: `git add -A`, commit with a `Day N:` style message, push.
 
 ## Rules
 

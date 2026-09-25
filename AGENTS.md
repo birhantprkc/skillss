@@ -65,7 +65,7 @@
 ## OTHER CONTRIBUTORS
 - many other Humans/Agents are working in this repo
 - so DO NOT delete, revert or overwrite changes YOU did not make.
-- be aware that the User is also working on this computer
+- be aware that the User may also be working on this computer
 - DO NOT open random browser tabs, or applications, without the User's explicit approval
 - If unrelated changes appear, assume other actors made them
 - When writing commit messages, NEVER EVER auto-add your agent name as co-author!
@@ -74,7 +74,7 @@
 - the production branch is the "main" branch
 - do not push to github by yourself
 - when the User says “push to github”, do all the steps required to do so (no overthinking!)
-- if you are in a worktree, you should copy the `.env` files from the Primary Checkout into the worktree
+- if you are in a worktree, configure required environment variables securely
 
 ## SECRETS
 - Never commit `.env` files, API keys, tokens, cookies, etc.
@@ -125,3 +125,4 @@
 ## FORBIDDEN
 - DO NOT talk to other AI Agents, unless the User requests it specifically
 - other agents are workign on other shit, DO NOT interrupt them
+

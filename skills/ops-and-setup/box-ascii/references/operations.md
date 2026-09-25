@@ -4,7 +4,7 @@ Official docs were checked through DeepAPI on 2026-09-09. Treat the HTTP/CLI exa
 
 ## Direct HTTP operations
 
-All paths are relative to `https://ascii.dev/api/box/v1` and require bearer authentication.
+All paths are relative to `<PROVIDER_API_BASE>/api/box/v1` and require bearer authentication.
 
 - Inspect: `GET /me`, `GET /limits`, `GET /boxes`, `GET /boxes/{id}`.
 - Create: `POST /boxes`, for example `{"ttlSeconds":7200,"noEnv":true}` for an isolated two-hour test. This provisions billable compute; size and TTL must fit the task and account limits.
@@ -19,7 +19,7 @@ All paths are relative to `https://ascii.dev/api/box/v1` and require bearer auth
 - Secrets: `POST /secrets` updates the default environment. It **replaces the entire collection**, not one key. Preserve all required variables/files. Prefer the granular endpoints below; they avoid rewriting other items or losing concurrent edits through a stale full collection.
 - Template: `POST /named-snapshots` with `{"boxId":"<id>","name":"agent-stack"}`; create from it with `POST /boxes` and `{"from":"agent-stack","environment":"dev"}`.
 
-Read the endpoint's current schema in the [API reference](https://docs.ascii.dev/box/api/v1#endpoint-reference) before adding fields. Do not invent a generic API route from a dashboard URL.
+Read the endpoint's current schema in the [API reference](PROVIDER_DOCS_URL#endpoint-reference) before adding fields. Do not invent a generic API route from a dashboard URL.
 
 ## Change one secret safely
 
@@ -29,7 +29,7 @@ Read the endpoint's current schema in the [API reference](https://docs.ascii.dev
 - These endpoints return `success`, `versionId`, and `versionNumber`. `versionId` is not the environment ID; retain the original environment ID for later operations.
 - Re-read the latest version before upgrading selected Boxes. An upgrade targets the latest version, so resolve unexpected concurrent edits before rolling it out. There is no revision precondition established by the schemas checked here.
 
-Sources: [one variable](https://docs.ascii.dev/box/api/reference/environments/set-environment-var), [one secret file](https://docs.ascii.dev/box/api/reference/environments/set-environment-secret-file), [targeted upgrade](https://docs.ascii.dev/box/api/reference/environments/upgrade-box-environment).
+Sources: [one variable](PROVIDER_DOCS_URL), [one secret file](PROVIDER_DOCS_URL), [targeted upgrade](PROVIDER_DOCS_URL).
 
 ## Requests, retries, and long work
 
@@ -45,7 +45,7 @@ Sources: [one variable](https://docs.ascii.dev/box/api/reference/environments/se
 - The prompt API documents `codex` and `claude-code`. A preinstalled harness is not necessarily supported by that API. Run BB or other harnesses through their own process/service and interfaces.
 - Native PowerShell pipelines can keep stdin open and hang command workflows. Use Python, WSL, or another documented path when reproducing that issue.
 
-Sources: [API](https://docs.ascii.dev/box/api/v1), [CLI](https://docs.ascii.dev/box/cli-reference), [long-running tasks](https://docs.ascii.dev/box/long-running-tasks), [setup](https://docs.ascii.dev/box/setup).
+Sources: [API](PROVIDER_DOCS_URL), [CLI](PROVIDER_DOCS_URL), [long-running tasks](PROVIDER_DOCS_URL), [setup](PROVIDER_DOCS_URL).
 
 ## SSH, BB, and Codex
 
@@ -70,14 +70,14 @@ A laptop-to-cloud tunnel does not prove independence from the laptop. If the BB 
 - Restore may become usable before background hydration finishes. Measure readiness for actual agent work, not just the API response or vendor startup claim.
 - A named snapshot is a fixed starting point, not an independent off-provider backup. Verify exports/restoration before promising recovery or retention; published retention terms have conflicted with product docs.
 
-Sources: [snapshots](https://docs.ascii.dev/box/snapshots), [environments](https://docs.ascii.dev/box/environments), [terms](https://box.ascii.dev/terms).
+Sources: [snapshots](PROVIDER_DOCS_URL), [environments](PROVIDER_DOCS_URL), [terms](PROVIDER_DOCS_URL).
 
 ## What we actually observed
 
 Manual integration tests on 2026-09-09 established the observations below. Keep detailed transcripts, live machine identifiers, and account details in the owning project's private records.
 
-- The tests used Python `urllib.request` with `BOX_API_KEY` and bearer headers. No Box-specific skill, installed SDK, or Box CLI was required for those requests.
+- The tests used Python `urllib.request` with `<API_KEY_ENV_VAR>` and bearer headers. No Box-specific skill, installed SDK, or Box CLI was required for those requests.
 - Authenticated account/limit/Box reads worked. A small temporary Python client also created a Box with `noEnv: true`, registered an SSH key, and called the command endpoint.
-- SSH/SCP handled BB installation and credential transfer. BB's remote worker ran Codex using the existing ChatGPT subscription, cloned a GitHub project, created a worktree, and completed a harmless coding test with diff review, local commit, and conversation continuation.
+- SSH/SCP handled BB installation and credential transfer. BB's remote worker ran Codex, cloned a GitHub project, created a worktree, and completed a harmless coding test with diff review, local commit, and conversation continuation.
 - One worktree setup took 66 seconds, including 63 seconds installing dependencies. This was one observation, not a latency guarantee. It motivates preparing dependencies in templates and measuring useful-work startup.
 - These tests establish the manual integration path. They do not by themselves establish automatic provisioning for every new thread, uninterrupted work after laptop disconnection, restart of the same conversation after stop/resume, or isolation under concurrent users. Verify each in the actual deployment before claiming it works.

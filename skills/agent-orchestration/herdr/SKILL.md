@@ -49,7 +49,7 @@ Do not close, rename, move, resize, or reconfigure panes you did not create. Do 
 
 ## Sharp edges (empirically verified)
 
-Hard-won facts from driving herdr in production. Trust these over intuition.
+Hard-won facts from driving Herdr. Trust these over intuition.
 
 ### Sessions & targeting
 
@@ -102,7 +102,7 @@ ALWAYS launch agents with auto-approval — a worker in an unattended pane stall
 - Codex CLI: `codex --yolo "task"`
 - Claude Code: `claude --dangerously-skip-permissions "task"`
 
-This is safe only because the user's `global-agent-guardrails` deny-list hook is installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
+This is safe only when appropriate guardrails are installed across all agents. First-run trust dialogs may still appear despite these flags — peek the pane after launch. `herdr integration install <cursor|codex|claude>` (once each) enables native agent-status detection.
 
 NEVER verify a launch with `sleep N && pane read` — that is a non-herdr antipattern. Use the native waits: `herdr agent wait <pane> --status working --timeout MS` (agent picked up the task) or `herdr wait output <pane> --match <text>`, then read the pane.
 

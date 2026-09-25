@@ -3,7 +3,7 @@
 ## MacBook installation
 
 - Binary: `~/.local/bin/cua-driver`; app: `/Applications/CuaDriver.app`.
-- Operator notes: your operator documentation. Use normal `standard` mode; no custom capability manifest or agent-added session timeouts.
+- Operator notes: operator notes. Use normal `standard` mode; no custom capability manifest or agent-added session timeouts.
 - Configuration: `~/.cua-driver/config.json`. Keep telemetry off and recording/history opt-in.
 - Other hosts must be checked independently; installing this skill does not install the driver.
 
@@ -27,7 +27,7 @@ The user enables CuaDriver in System Settings → Privacy & Security →
 Accessibility and Screen & System Audio Recording, and accepts any requested
 relaunch. Tahoe may also ask for direct-capture consent.
 
-Start only the reviewed daemon configuration from your operator documentation. On macOS,
+Start only the reviewed daemon configuration from the operator notes. On macOS,
 use LaunchServices or the approved LaunchAgent, not a raw shell-spawned daemon.
 `--no-permissions-gate` suppresses onboarding UI; it does not grant OS access.
 Never start a second, broader runtime to get around the current policy.
@@ -56,7 +56,7 @@ release's exact surface; review official docs when upgrading.
 Before an authorized update, unload the approved LaunchAgent and stop its daemon.
 Review/pin the replacement, preserve the user's configuration, then recheck
 signature, telemetry, permissions and an authorized harmless action. Test logout/login
-before claiming startup persistence. See your operator documentation for stop/uninstall.
+before claiming startup persistence. See operator notes for stop/uninstall.
 
 Sources: [install](https://cua.ai/docs/how-to-guides/driver/install),
 [permissions](https://cua.ai/docs/reference/cua-driver/macos-permissions),

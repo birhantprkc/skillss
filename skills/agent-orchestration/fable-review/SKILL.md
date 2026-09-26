@@ -1,24 +1,26 @@
 ---
 name: fable-review
-description: Launch a Fable 5.1 Extra High code reviewer and return its findings verbatim. Use only when the user explicitly invokes /fable-review.
+description: Launch an independent Fable code review and return it verbatim. Use only when the user explicitly invokes /fable-review.
 disable-model-invocation: true
 triggers: [user, model]
 ---
 
 # Fable Review
 
-Launch a Fable 5.1 Extra High reviewer to review everything fully and carefully, as if it was a senior developer reviewing the work of a junior.
+Use **Fable 5.1 Extra High** through Claude Code, orchestrated by the configured tool.
 
-**Default harness is Cloudroom.** Read `/room-cli` first and use the `room` CLI. Spawn a Cloudroom thread with Claude Code **Fable 5.1 Extra High** (look up provider/model IDs — do not guess). Reuse this thread's environment so the reviewer sees the same files. Use `--parent-self` when this thread is coordinating the review. Then `room thread wait` and show the exact `room thread output`.
+## Run
 
-If the user names another harness (Cursor Task, cmux, Codex CLI, etc.), use that instead.
+Read the configured launch instructions and follow its launch checks. Discover provider/model/effort IDs rather than guessing. Reuse the current environment, including uncommitted work, and use the harness's self-coordination option when coordinating.
 
-Give it the necessary context, but make sure to stay neutral and unbiased. Do not nudge it towards any one specific solution. The goal here is to do great work. So be as objective and neutral as possible in writing the prompt for the subagent.
+If the user names another harness, read its skill and use it with the same model, effort, workspace, brief, and output requirements. Report unavailable model/effort as blockers; never silently downgrade.
 
-Tell him what to review, but don't be overly specific — let him find his own bugs and shortcomings. Just tell him to work extremely hard, to go deep in the review, and to surface any critical or serious issues found in the review.
+## Review brief
 
-And when the subagent finishes, show the user his exact response in full. Do not rewrite it. Do not update it.
+Give neutral context: scope, paths, intended behavior, and diff/base revision. Ask for a thorough senior-developer review, including related code and tests, without steering toward suspected bugs, solutions, or verdicts. Review only; do not change files. Request a concise plain-English report of serious or critical issues, fixes, and production merge readiness. Distinguish verified findings from uncertainty and identify validation gaps.
 
-Again, the goal here is to write great software. It's to build amazing software, and in order to do that you need to let the subagent do its work: tell it what to review in a broad way, be as unbiased as possible, don't influence it in any way, and tell it to output a detailed report — telling the user whether the code is good and safe to be merged into production, or whether there are any serious or critical issues with it, and if so, how to fix them.
+## Result
 
-Also tell him to make the final report concise, written in plain English.
+Use the selected harness's wait and output functions. Verify this review actually completed; idle status, timeouts, and queued retries are not completion. Report blockers rather than presenting partial output as a finished review.
+
+Return the completed reviewer's full final response verbatim.
